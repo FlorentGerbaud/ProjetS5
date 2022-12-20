@@ -22,6 +22,7 @@ public abstract class TraitementImage {
 
 
     /** ----- CONSTRUCTEUR ----- **/
+
     public TraitementImage(String path_img){
 
         this.path_img = Paths.get(path_img);
@@ -32,5 +33,16 @@ public abstract class TraitementImage {
         }
 
     }
+
+    /** ------ METHODES OUVERTURE DES FICHIERS ET VERIFICATIONS D'USAGE ------ **/
+
+
+    /** ------ METHODES RECUPERATIONS DES PIXELS DE L'IMAGE ------ **/
+
+
+    /** ------ METHODES TRAITEMENTS DES IMAGES GRIS ------ **/
+
+
+    /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
 
 }

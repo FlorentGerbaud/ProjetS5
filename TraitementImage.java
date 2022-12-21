@@ -20,14 +20,15 @@ import java.nio.file.Files;
 
 /** ----- PACKAGES STRUCTURES DE DONNEES ------ **/
 
-//test de git dans la branche flo
-     
+ //dans la branche flo
+
 public abstract class TraitementImage {
     
     /** ----- ATTRIBUTS DE CLASSE ------ **/
 
     private Path path_img;
 
+        //test git 
 
     /** ----- CONSTRUCTEUR ----- **/
 

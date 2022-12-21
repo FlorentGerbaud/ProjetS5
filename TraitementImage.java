@@ -1,6 +1,14 @@
 /** ----- PACKAGES LECTURE IMAGE PNG ----- **/
 import javax.media.jai.RenderedOp;
-
+import javax.media.jai.JAI;
+import javax.media.jai.RasterFactory;
+import java.awt.image.BufferedImage;
+import java.awt.Dimension;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.PackedColorModel;
+import java.awt.image.WritableRaster;
 
 /** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
 
@@ -61,5 +69,7 @@ public abstract class TraitementImage {
      */
 
     /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
+
+
 
 }

@@ -28,6 +28,7 @@ public abstract class TraitementImage {
 
     private Path path_img;
 
+        //test git 
 
     /** ----- CONSTRUCTEUR ----- **/
 

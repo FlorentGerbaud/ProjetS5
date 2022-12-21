@@ -20,7 +20,7 @@ import java.nio.file.Files;
 
 /** ----- PACKAGES STRUCTURES DE DONNEES ------ **/
 
-//test de git
+//test de git dans la branche flo
      
 public abstract class TraitementImage {
     

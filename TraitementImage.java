@@ -20,8 +20,8 @@ import java.nio.file.Files;
 
 /** ----- PACKAGES STRUCTURES DE DONNEES ------ **/
 
-
-
+//test de git
+     
 public abstract class TraitementImage {
     
     /** ----- ATTRIBUTS DE CLASSE ------ **/

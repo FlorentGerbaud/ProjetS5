@@ -1,6 +1,5 @@
 /** ----- PACKAGES LECTURE IMAGE PNG ----- **/
-import mam3.ipa.tp6.TicketMachine;
-import projets5.*;
+
 /** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
 
 import java.nio.file.Path;
@@ -44,10 +43,6 @@ public abstract class TraitementImage {
 
     /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
 
-    /*========================================================================
-    Voici comment ouvrir une image PNG et garder dans un tableau int[] 
-      les pixels de toute l'image s'il s'agit d'une image couleur :
-========================================================================*/
 
 
 }

@@ -9,6 +9,8 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.PackedColorModel;
 import java.awt.image.WritableRaster;
+import java.awt.color.ColorSpace;
+import java.awt.image.DataBufferByte;
 
 /** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
 
@@ -22,7 +24,7 @@ import java.nio.file.Files;
 
  //dans la branche flo
 
-public abstract class TraitementImage {
+ abstract public class TraitementImage {
     
     /** ----- ATTRIBUTS DE CLASSE ------ **/
 
@@ -42,6 +44,11 @@ public abstract class TraitementImage {
         }
 
     }
+
+    abstract public int [] RecupImageCouleur(String path_img);
+
+    abstract public byte [] RecupImageNoirBlanc(String path_img);
+
 
     /** ------ METHODES OUVERTURE DES FICHIERS ET VERIFICATIONS D'USAGE ------ **/
 

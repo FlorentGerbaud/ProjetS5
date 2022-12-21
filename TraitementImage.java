@@ -1,5 +1,5 @@
 /** ----- PACKAGES LECTURE IMAGE PNG ----- **/
-import projets5.*;
+import javax.media.jai.RenderedOp;
 
 
 /** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
@@ -42,6 +42,23 @@ public abstract class TraitementImage {
 
     /** ------ METHODES TRAITEMENTS DES IMAGES GRIS ------ **/
 
+    /**
+     *  ------ METHODES Assombrissement ------
+     * @param
+     * @param
+     */
+
+     /**
+     *  ------ METHODES CONTRASTE ------
+     * @param
+     * @param
+     */
+
+     /**
+     *  ------ METHODES ECLERAGE ------
+     * @param
+     * @param
+     */
 
     /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
 

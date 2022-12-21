@@ -21,7 +21,7 @@ import java.nio.file.Files;
 /** ----- PACKAGES STRUCTURES DE DONNEES ------ **/
 
 
-
+     
 public abstract class TraitementImage {
     
     /** ----- ATTRIBUTS DE CLASSE ------ **/

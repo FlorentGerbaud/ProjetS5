@@ -6,15 +6,28 @@ import java.nio.file.Files;
 public class TestRecupImage {
     public static void main(String[] args){
 
+        //test fonction de recuperation classique
+
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
         byte t[] = imageToProcess.RecupImageNoirBlanc(args[0]);
+        int width = imageToProcess.getWidth();
+        int height = imageToProcess.getHEIGHT();
 
         for (int k=0;k<t.length; k++){
             System.out.println(t[k]);
         }
-        //imageToProcess.afficheChemin();
         int y=56;
-        System.out.printf("res = %08X%n", y);
+        // System.out.printf("res = %08X%n", y);
+        // String f =String.format("%08x", y);
+        // System.out.println(f);
+        // int n = Integer.parseInt(f);
+        // System.out.println("c'est un entier " + n);
+        int img[][] = imageToProcess.imageNoirBlanc(args[0]);
+        for (int l=0; l<width; l++){
+            for (int c=0; c<height; c++){
+                System.out.println(img[l][c]);
+            }
+        }
 
 
     }

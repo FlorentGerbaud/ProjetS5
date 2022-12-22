@@ -11,6 +11,8 @@ import java.awt.image.PackedColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
+import java.awt.Point;
+import java.awt.image.SampleModel;
 
 /** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
 
@@ -79,13 +81,14 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     /** ----- METHODES POUR SAUVEGARDER LES IMAGES ----- **/
 
-    // public void saveImage(byte [] pxgs){
-    //     //byte[] pxgs;
-    //     SampleModel sm = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE, IMG_WIDTH, IMG_HEIGHT, 1); // only one band (no big surprise here)
-    //     BufferedImage image = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);           // it is a TYPE_BYTE_GRAY image
-    //     image.setData(Raster.createRaster(sm, new DataBufferByte(pxgs, pxgs.length), new Point()));             // take the data from pxg
-    //     JAI.create("filestore", image, "res-gs.png", "PNG");
-    // }
+    public void saveImage(byte[] pxgs){
+        int IMG_WIDTH=getWidth();
+        int IMG_HEIGHT=getHEIGHT();
+        SampleModel sm = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE, IMG_WIDTH, IMG_HEIGHT, 1); // only one band (no big surprise here)
+        BufferedImage image = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);           // it is a TYPE_BYTE_GRAY image
+        image.setData(Raster.createRaster(sm, new DataBufferByte(pxgs, pxgs.length), new Point()));             // take the data from pxg
+        JAI.create("filestore", image, "res-gs.png", "PNG");
+    }
 
     /** ----- METHODE POUR TRANSFORMER L'IMAGE SOUS FORME DE MATRICE ----- **/
 
@@ -120,11 +123,31 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         for (int l=0; l< width; l++){
             for (int c=0; c< height; c++){
                 pixelAssombri=img[l][c]*img[l][c];
-                pixelNormalise=pixelAssombri%255;
+                pixelNormalise=pixelAssombri/255;
+                imgAssombri[l][c]=pixelNormalise;
             }
         }
 
         return imgAssombri;
+    }
+
+    public byte [] imageModifie(int [][] img){
+
+        int width=getWidth();
+        int height=getHEIGHT();
+        byte [] imgModif = new byte [width*height];
+        int indexTabImg=0;
+        byte b;
+
+        for(int l=0; l<width; l++){
+            for (int c=0; c<height; c++){
+                b=(byte) img[l][c];
+
+                imgModif[indexTabImg]=b;
+                indexTabImg++;
+            }
+        }
+        return imgModif;
     }
 
     /** ----- GETTERS ----- **/

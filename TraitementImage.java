@@ -1,4 +1,11 @@
-/** ----- PACKAGES LECTURE IMAGE PNG ----- **/
+/* 
+
+ * #############################################################
+ * #        PACKAGES LECTURE ET ECRITURE IMAGE PNG             #
+ * #############################################################
+ 
+*/
+
 import javax.media.jai.RenderedOp;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
@@ -12,7 +19,13 @@ import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 
-/** ----- PACKAGES TRAITEMENTS FICHIERS ----- **/
+/* 
+
+ * #############################################################
+ * #           PACKAGES TRAITEMENT DES FICHIERS                #
+ * #############################################################
+ 
+*/
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,65 +33,84 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 
 
-/** ----- PACKAGES STRUCTURES DE DONNEES ------ **/
+/* 
 
- //dans la branche flo
+ * #############################################################
+ * #        PACKAGES STRUCTURE DE DONNEES                      #
+ * #############################################################
+ 
+*/
 
- abstract public class TraitementImage {
+
+
+public abstract class TraitementImage {
     
-    /** ----- ATTRIBUTS DE CLASSE ------ **/
+/* 
 
-    private Path path_img;
+ * #############################################################
+ * #        ATTRIBUTS DE LA CLASSE                             #
+ * #############################################################
+ 
+*/
+    private Path file_path;                // chemin de l'image
 
-        //test git 
+    private String file_name;             // nom du fichier
 
-    /** ----- CONSTRUCTEUR ----- **/
+/* 
 
-    public TraitementImage(String path_img){
+ * #############################################################
+ * #        CONSTRUCTEUR(S) DE LA CLASSE                       #
+ * #############################################################
+ 
+*/
 
-        this.path_img = Paths.get(path_img);
+    public TraitementImage(String file_path){
 
-        if (!Files.exists(this.path_img)) {
+        this.file_path = Paths.get(file_path);
 
-            this.path_img = null;
+        if (!Files.exists(this.file_path)) {                          // L'image n'existe pas.
+
+            this.file_path = null;
+
+            this.file_name = null;
+        }
+        else{                                                         // L'image existe
+
+            this.file_path = Paths.get(file_path); 
+            
+            this.file_name = this.file_path.getFileName().toString(); // uniquement le nom du fichier
+
         }
 
     }
 
-    abstract public int [] RecupImageCouleur(String path_img);
+    public String getPathFile(){
 
-    abstract public byte [] RecupImageNoirBlanc(String path_img);
+        return this.file_path.toString();
 
+    }
 
-    /** ------ METHODES OUVERTURE DES FICHIERS ET VERIFICATIONS D'USAGE ------ **/
+    public String getNameFile(){
 
+        return this.file_name;
 
-    /** ------ METHODES RECUPERATIONS DES PIXELS DE L'IMAGE ------ **/
-
-
-    /** ------ METHODES TRAITEMENTS DES IMAGES GRIS ------ **/
-
-    /**
-     *  ------ METHODES Assombrissement ------
-     * @param
-     * @param
-     */
-
-     /**
-     *  ------ METHODES CONTRASTE ------
-     * @param
-     * @param
-     */
-
-     /**
-     *  ------ METHODES ECLERAGE ------
-     * @param
-     * @param
-     */
-
-    /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
+    }
 
 
 
+
+
+    abstract public void barPlotToFile(String name_img, String destination);
+
+    abstract public void saveImage(byte[] pxgs, String nameOut);
+   
+    abstract public int [][] imageNoirBlanc(String path_img);
+
+    abstract public int [][] assombrissement(int [][] img);
+   
+    abstract public int [][] eclairage(int [][] img);
+   
+    abstract public byte [] imageModifie(int [][] img);
+   
+    abstract public int [][] contraste(int [][] img);
 }
-///fhedjfvbdsjvbdmsfvbmed<sjvjfm<gb

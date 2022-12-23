@@ -100,15 +100,15 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     public int [][] imageNoirBlanc(String path_img){
 
         int indexPxg=0;
-        int pixInt=0; //entier qui contient le byte correspondant à la valeur du pixel
-        String pixHexa; // string qui contient la valeur hexadecimal du byte
+        // int pixInt=0; //entier qui contient le byte correspondant à la valeur du pixel
+        // String pixHexa; // string qui contient la valeur hexadecimal du byte
         byte pxg[] = RecupImageNoirBlanc(path_img);
         int [][] img = new int [this.IMG_WIDTH][this.IMG_HEIGHT]; //initialisation du tableau image
         for (int l=0; l<this.IMG_WIDTH; l++){
             for (int c=0; c<this.IMG_HEIGHT; c++){
-                pixHexa = String.format("%08x", pxg[indexPxg]); //tranforme le byte en hexa decimal sous forme de String
-                pixInt = Integer.parseInt(pixHexa,16); // transforme l'hexa en int
-                img[l][c]=pixInt; // puis on le stock
+                // pixHexa = String.format("%08x", pxg[indexPxg]); //tranforme le byte en hexa decimal sous forme de String
+                // pixInt = Integer.parseInt(pixHexa,16); // transforme l'hexa en int
+                img[l][c]=(int) pxg[indexPxg] & 0xFF;; // puis on le stock
                 indexPxg++;
             }
         }
@@ -214,6 +214,11 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
         return imgContraster;
     }
+
+    /**
+     * ----- METHODE TRANSFORMATION IMAGE COULEUR VERS IMAGE ------
+     * @return
+     */
     
 
     /** ----- GETTERS ----- **/

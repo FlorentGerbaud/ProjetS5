@@ -2,6 +2,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
+import java.lang.String;
 
 public class TestRecupImage {
     public static void main(String[] args){
@@ -11,8 +12,46 @@ public class TestRecupImage {
         // recupe info de l'image de base
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
         byte t[] = imageToProcess.RecupImageNoirBlanc(args[0]); // tableau qui contient l'image dans un tableau de byte
+        //int c[] = imageToProcess.RecupImageCouleur(args[0]);
+
         int width = imageToProcess.getWidth(); // on recupere les dimensions de l'image
         int height = imageToProcess.getHEIGHT();
+        
+
+        //System.out.println("w : "+ width+ "h : "+height + " l : " );
+
+        // for (int k=0;k<t.length; k++){
+        //     System.out.println(t[k]);
+        // }
+
+        // -----------convertion RGB Test -----------------
+        //ffe9e9e9
+        // int y=-1447447;
+        // String f =String.format("%08x", y);
+        // String A=f.substring(0,2);
+        // String R=f.substring(2,4);
+        // String G=f.substring(4,6);
+        // String B=f.substring(6,8);
+        // System.out.println("A : "+A);
+        // System.out.println("R : "+R);
+        // System.out.println("G : "+G);
+        // System.out.println("B : "+B);
+        // System.out.println(f);
+        // int a = Integer.parseInt(A,16);
+        // int r = Integer.parseInt(R,16);
+        // int g = Integer.parseInt(G,16);
+        // int b = Integer.parseInt(B,16);
+        // System.out.println("alpha : " + a + " r : " + r + " g : " + g + " b : "+b);
+        // byte ar;
+        // byte rr;
+        // byte gr;
+        // byte br;
+        // int decimal = Integer.parseInt("ffe9", 16);
+        // System.out.println(decimal);
+
+        
+
+            // --------------- test img noir blanc ----------------
         
         //applique un traitement d'assombrissement sur l'image de base
         int img[][] = imageToProcess.imageNoirBlanc(args[0]); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
@@ -37,16 +76,14 @@ public class TestRecupImage {
         imageToProcess.saveImage(nImg3, "MaGeuleRestaurer");
 
 
-
-        // int x;
-        // double z=5.8;
-        // double y;
-        // y =(double) z;
-        // System.out.println((int)y);
-
-
     }
 }
+
+// int x;
+// double z=5.8;
+// double y;
+// y =(double) z;
+// System.out.println((int)y);
 
 //des bouts de code qui peuvent etre utile
 

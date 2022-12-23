@@ -8,18 +8,28 @@ public class TestRecupImage {
 
         //test fonction de recuperation classique
 
+        // recupe info de l'image de base
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
         byte t[] = imageToProcess.RecupImageNoirBlanc(args[0]); // tableau qui contient l'image dans un tableau de byte
         int width = imageToProcess.getWidth(); // on recupere les dimensions de l'image
         int height = imageToProcess.getHEIGHT();
         
+        //applique un traitement d'assombrissement sur l'image de base
         int img[][] = imageToProcess.imageNoirBlanc(args[0]); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
         int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement
         byte [] nImg=imageToProcess.imageModifie(imgAssombri1); // écrit l'image assombris dans un tableau de byte
         imageToProcess.saveImage(nImg, "MaGeuleAssombrie"); // puis sauvegarde l'image
+
+        //applique un traitement d'éclairage sur l'image de base
         int [][] imgEclairer1=imageToProcess.eclairage(img); 
         byte [] nImg2=imageToProcess.imageModifie(imgEclairer1);
         imageToProcess.saveImage(nImg2, "MaGeuleEclairer");
+
+        //applique un eclairage sur l'image assombris
+        int img2[][] = imageToProcess.imageNoirBlanc("MaGeuleAssombrie");
+        int [][] imgRestaurer=imageToProcess.eclairage(img2); 
+        byte [] nImg3=imageToProcess.imageModifie(imgRestaurer);
+        imageToProcess.saveImage(nImg3, "MaGeuleRestaurer");
 
 
         // int x;

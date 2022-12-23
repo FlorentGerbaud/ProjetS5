@@ -154,19 +154,19 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
         int width=getWidth(); // on recupere la taille de l'image
         int height=getHEIGHT();
-        int [][] imgAssombri = new int [width][height]; //on défini notre matrice du tableau assombris
-        double pixelAssombri=0;
+        int [][] imgEclairer = new int [width][height]; //on défini notre matrice du tableau assombris
+        double pixelEclairer=0;
         double pixelNormalise=0;
 
         for (int l=0; l< width; l++){
             for (int c=0; c< height; c++){
-                pixelAssombri=Math.sqrt((double)img[l][c]); //on applique la methode pour assombrir le pixel
-                pixelNormalise=pixelAssombri*16; //on le normalise
-                imgAssombri[l][c]=(int)pixelNormalise; // puis on le stock
+                pixelEclairer=Math.sqrt((double)img[l][c]); //on applique la methode pour assombrir le pixel
+                pixelNormalise=pixelEclairer*16; //on le normalise
+                imgEclairer[l][c]=(int)pixelNormalise; // puis on le stock
             }
         }
 
-        return imgAssombri;
+        return imgEclairer;
     }
 
     /**
@@ -192,6 +192,29 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
         return imgModif;
     }
+
+    /**
+     * ----- METHODE CONTRASTE ------
+     * @return
+     */
+
+     public int [][] contraste(int [][] img){
+
+        int width=getWidth(); // on recupere la taille de l'image
+        int height=getHEIGHT();
+        int [][] imgContraster = new int [width][height]; //on défini notre matrice du tableau contraste
+        int pixelContraster=0;
+
+        for (int l=0; l< width; l++){
+            for (int c=0; c< height; c++){
+                pixelContraster=255-img[l][c]; //on applique la methode pour contraster le pixel
+                imgContraster[l][c]=pixelContraster; // puis on le stock
+            }
+        }
+
+        return imgContraster;
+    }
+    
 
     /** ----- GETTERS ----- **/
 

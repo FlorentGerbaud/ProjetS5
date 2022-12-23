@@ -45,36 +45,29 @@ import java.nio.file.Files;
 
     }
 
-    abstract public int [] RecupImageCouleur(String path_img);
-
-    abstract public byte [] RecupImageNoirBlanc(String path_img);
-
+    
 
     /** ------ METHODES OUVERTURE DES FICHIERS ET VERIFICATIONS D'USAGE ------ **/
 
 
     /** ------ METHODES RECUPERATIONS DES PIXELS DE L'IMAGE ------ **/
 
+    abstract public int [] RecupImageCouleur(String path_img);
+
+    abstract public byte [] RecupImageNoirBlanc(String path_img);
+
+    /** ------ METHODES ECRITURE DES IMAGES ------ **/
+
+    abstract public byte [] imageModifie(int [][] img);
+
 
     /** ------ METHODES TRAITEMENTS DES IMAGES GRIS ------ **/
 
-    /**
-     *  ------ METHODES Assombrissement ------
-     * @param
-     * @param
-     */
+    abstract public int [][] eclairage(int [][] img);
 
-     /**
-     *  ------ METHODES CONTRASTE ------
-     * @param
-     * @param
-     */
+    abstract public int [][] assombrissement(int [][] img);
 
-     /**
-     *  ------ METHODES ECLERAGE ------
-     * @param
-     * @param
-     */
+    abstract public int [][] contraste(int [][] img);
 
     /** ------ METHODES TRAITEMENTS DES IMAGES RGBA ------ **/
 

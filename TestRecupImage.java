@@ -25,11 +25,17 @@ public class TestRecupImage {
         byte [] nImg2=imageToProcess.imageModifie(imgEclairer1);
         imageToProcess.saveImage(nImg2, "MaGeuleEclairer");
 
+        //applique un traitement de contraste sur l'image de base
+        int [][] imgContraster=imageToProcess.contraste(img); 
+        byte [] nImg4=imageToProcess.imageModifie(imgContraster);
+        imageToProcess.saveImage(nImg4, "MaGeuleContraster");
+
         //applique un eclairage sur l'image assombris
         int img2[][] = imageToProcess.imageNoirBlanc("MaGeuleAssombrie");
         int [][] imgRestaurer=imageToProcess.eclairage(img2); 
         byte [] nImg3=imageToProcess.imageModifie(imgRestaurer);
         imageToProcess.saveImage(nImg3, "MaGeuleRestaurer");
+
 
 
         // int x;

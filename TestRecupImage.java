@@ -30,8 +30,6 @@ public class TestRecupImage {
 
         
 
-            // --------------- test img noir blanc ----------------
-        
         //applique un traitement d'assombrissement sur l'image de base
         int img[][] = imageToProcess.imageNoirBlanc(args[0]); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
         int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement

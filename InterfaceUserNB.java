@@ -7,6 +7,11 @@ public class InterfaceUserNB{
     private String imgRename;
     private String plusieurTraitement;
     private String stop;
+    private String pathFileOut;
+
+    /**
+     * ------ CONSTRUCTEUR ------
+     */
 
     public InterfaceUserNB(){
     
@@ -15,24 +20,37 @@ public class InterfaceUserNB{
         this.imgRename="tamere";
         this.plusieurTraitement="";
         this.stop="";
+        this.pathFileOut="";
     }
+
+    /**
+     * ------ CHOIX TRAITEMENT ------
+     */
 
     public void traitementUser(){
 
         Scanner traitementImg = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Quelle traitement voulez vous appliquez à l'image");
         this.traitement = traitementImg.nextLine();  // Read user input
-        System.out.println("Vous avez choisis : " + this.traitement);  // Output user input
+        //System.out.println("Vous avez choisis : " + this.traitement);  // Output user input
 
     }
+
+    /**
+     * ------ CHOIX IMAGE ------
+     */
 
     public void imageUser(){
 
         Scanner image = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Quelle fichier voulez vous traitez ? ");
         this.path_img = image.nextLine();  // Read user input
-        System.out.println("Vous avez choisis : " + this.path_img);  // Output user input
+        //System.out.println("Vous avez choisis : " + this.path_img);  // Output user input
     }
+
+    /**
+     * ------ GESTION DU NOMBRE DE TRAITEMENT ------
+     */
 
     public boolean plusieurTraitement(){
 
@@ -45,6 +63,10 @@ public class InterfaceUserNB{
         return false;
     }
 
+    /**
+     * ------ GESTION D'ARRET DU MENU ------
+     */
+
     public String stop(){
 
         Scanner image = new Scanner(System.in);  // Create a Scanner object
@@ -53,28 +75,54 @@ public class InterfaceUserNB{
         return this.stop;
     }
 
+    /**
+     * ------ CHOIX FICHIER SORTIE POUR L'ANALYSE EXPOSITION ------
+     */
+
+    public void FileOut(){
+
+        Scanner image = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Fichier destination pour l'anayse de l'exposition : ");
+        this.pathFileOut = image.nextLine();  // Read user input
+    }
+
+    /**
+     * ------ RENOMME L'IMAGE ------
+     */
+
     public void renameImg(){
 
-        String[] cheminAcces = this.path_img.split("/");
-        String nameImg=cheminAcces[cheminAcces.length-1];
-        System.out.println("test : "+ cheminAcces[cheminAcces.length-1]);
-        String [] accsName=nameImg.split(".png");
-        System.out.println(accsName.length);
-        this.imgRename=accsName[0]+this.traitement+".png";
-        System.out.println(this.imgRename);
+        String[] cheminAcces;
+        String nameImg;
+
+        if(this.path_img.contains("/")){
+
+            cheminAcces = this.path_img.split("/"); //on spit autour du / si jamais on a un chemin d'accès
+            nameImg=cheminAcces[cheminAcces.length-1]; //recupere le nom img.png
+        }
+        else{
+            nameImg=this.path_img;
+        }
+        String [] accsName=nameImg.split(".png"); //supprime le .png
+        this.imgRename=accsName[0]+this.traitement+".png"; //renommage de l'image
     }
+
+    /**
+     * ------ TRAITEMENT IMAGE ------
+     * selon le traitement, l'image on applique un certains traitement
+     */
 
     public void GestionTraitement(){
 
         imageUser();
         traitementUser();
-        renameImg();
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(this.path_img);
-        byte t[] = imageToProcess.RecupImageNoirBlanc(this.path_img);
+        
 
         switch (this.traitement) {
             case "A":
-            System.out.println("Ta mere je suis la");
+            
+                renameImg();
                 int img[][] = imageToProcess.imageNoirBlanc(this.path_img); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
                 int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement
                 byte [] nImg=imageToProcess.imageModifie(imgAssombri1); // écrit l'image assombris dans un tableau de byte
@@ -82,6 +130,8 @@ public class InterfaceUserNB{
                 break;
 
             case "E": //applique un traitement d'éclairage sur l'image de base
+                
+                renameImg();
                 int img2[][] = imageToProcess.imageNoirBlanc(this.path_img);
                 int [][] imgRestaurer=imageToProcess.eclairage(img2); 
                 byte [] nImg2=imageToProcess.imageModifie(imgRestaurer);
@@ -89,6 +139,8 @@ public class InterfaceUserNB{
                 break;
             
             case "C": //applique un traitement de contraste sur l'image
+
+                renameImg();
                 int img3[][] = imageToProcess.imageNoirBlanc(this.path_img);
                 int [][] imgContraster=imageToProcess.contraste(img3); 
                 byte [] nImg3=imageToProcess.imageModifie(imgContraster);
@@ -96,7 +148,9 @@ public class InterfaceUserNB{
                 break;
             
             case "AE":
-                //Mettre le code pour lancer l'analyse de l'exposition
+
+                FileOut(); // récupère le fichier dans lequelle l'ae sera enregistré
+                imageToProcess.barPlotToFile(this.path_img,this.pathFileOut); // sort le fichier d'ae 
                 break;
             
             case "rgbToNb":

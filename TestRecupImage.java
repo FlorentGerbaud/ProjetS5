@@ -2,6 +2,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
+import java.lang.String;
 
 public class TestRecupImage {
     public static void main(String[] args){
@@ -9,24 +10,24 @@ public class TestRecupImage {
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
         imageToProcess.barPlotToFile(args[0],args[1]);
 
-        int y=-1447447;
-        String f =String.format("%08x", y);
-        String A=f.substring(0,2);
-        String R=f.substring(2,4);
-        String G=f.substring(4,6);
-        String B=f.substring(6,8);
-        System.out.println("A : "+A);
-        System.out.println("R : "+R);
-        System.out.println("G : "+G);
-        System.out.println("B : "+B);
-        System.out.println(f);
-        int a = Integer.parseInt(A,16);
-        int r = Integer.parseInt(R,16);
-        int g = Integer.parseInt(G,16);
-        int b = Integer.parseInt(B,16);
-        System.out.println("alpha : " + a + " r : " + r + " g : " + g + " b : "+b);
-        int decimal =Long.valueOf(f,16).intValue();
-        System.out.println(decimal);
+        // int y=-1447447;
+        // String f =String.format("%08x", y);
+        // String A=f.substring(0,2);
+        // String R=f.substring(2,4);
+        // String G=f.substring(4,6);
+        // String B=f.substring(6,8);
+        // System.out.println("A : "+A);
+        // System.out.println("R : "+R);
+        // System.out.println("G : "+G);
+        // System.out.println("B : "+B);
+        // System.out.println(f);
+        // int a = Integer.parseInt(A,16);
+        // int r = Integer.parseInt(R,16);
+        // int g = Integer.parseInt(G,16);
+        // int b = Integer.parseInt(B,16);
+        // System.out.println("alpha : " + a + " r : " + r + " g : " + g + " b : "+b);
+        // int decimal =Long.valueOf(f,16).intValue();
+        // System.out.println(decimal);
 
         
 

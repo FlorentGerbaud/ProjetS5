@@ -7,13 +7,18 @@ import java.lang.String;
 public class TestRecupImage {
     public static void main(String[] args){
 
+        /**
+         * Utilisation : 
+         * TestRecupImage <nom/de/image.png> <nom_fichier_destination.png (uniquement pour imageNB pour l'instant)>
+         */
+
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
 
         TraitementImageCouleur imageToProcessColor = new TraitementImageCouleur(args[0]);
 
-        // imageToProcess.eclairage();
-        // imageToProcess.assombrissement();
-        // imageToProcess.saveImage(args[1]);
+        imageToProcess.eclairage();
+        imageToProcess.assombrissement();
+        imageToProcess.saveImage(args[1]);
 
         imageToProcessColor.toAffiche();
 

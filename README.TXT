@@ -22,4 +22,16 @@ post_process_pixels qui est un tableau de byte. C'est donc plus propre. Je te la
  dans un fichier .png
  */
 
+3. A PROPOS DE TestRecupImage
+
+TestRecupImage est l'endroit ou on test nos fonctions une fois qu'on sait qu'elles fonctionnent bien,
+on l'implémente dans InterfaceForUser.java.
+
+Essaye de toujours préciser comment on lance les méthodes et quelles sont les arguments.
+(je l'ai précisé dans TestRecupImage pour la première partie comme ça tu pourras tester via la nouvelles 
+transformation i.e suppresion des matrices pour les images NOIRBLANC)
+
+
+
+
 

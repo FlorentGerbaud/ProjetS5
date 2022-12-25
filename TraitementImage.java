@@ -98,19 +98,23 @@ public abstract class TraitementImage {
 
 
 
+/* 
+
+ * ################################################################################
+ * #         METHODES DE TRAITEMENTS POUR LES IMAGES EN NIVEAU DE GRIS            #
+ * ################################################################################
+ * 
+ *  Il s'agit ici des méthodes communes aux images au format ARGB et en niveau de GRIS
+ 
+*/
+
+    abstract public void assombrissement();
+   
+    abstract public void eclairage();
+   
+    abstract public void contraste();
 
 
-    abstract public void barPlotToFile(String name_img, String destination);
-
-    abstract public void saveImage(byte[] pxgs, String nameOut);
-   
-    abstract public int [][] imageNoirBlanc(String path_img);
-
-    abstract public int [][] assombrissement(int [][] img);
-   
-    abstract public int [][] eclairage(int [][] img);
-   
-    abstract public byte [] imageModifie(int [][] img);
-   
-    abstract public int [][] contraste(int [][] img);
 }
+
+

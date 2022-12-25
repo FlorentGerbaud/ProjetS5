@@ -123,7 +123,7 @@ public class InterfaceUserNB{
             case "A":
             
                 renameImg();
-                int img[][] = imageToProcess.imageNoirBlanc(this.path_img); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
+                int img[][] = imageToProcess.imageNoirBlanc(); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
                 int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement
                 byte [] nImg=imageToProcess.imageModifie(imgAssombri1); // écrit l'image assombris dans un tableau de byte
                 imageToProcess.saveImage(nImg, this.imgRename); // puis sauvegarde l'image
@@ -132,7 +132,7 @@ public class InterfaceUserNB{
             case "E": //applique un traitement d'éclairage sur l'image de base
                 
                 renameImg();
-                int img2[][] = imageToProcess.imageNoirBlanc(this.path_img);
+                int img2[][] = imageToProcess.imageNoirBlanc();
                 int [][] imgRestaurer=imageToProcess.eclairage(img2); 
                 byte [] nImg2=imageToProcess.imageModifie(imgRestaurer);
                 imageToProcess.saveImage(nImg2, this.imgRename);
@@ -141,7 +141,7 @@ public class InterfaceUserNB{
             case "C": //applique un traitement de contraste sur l'image
 
                 renameImg();
-                int img3[][] = imageToProcess.imageNoirBlanc(this.path_img);
+                int img3[][] = imageToProcess.imageNoirBlanc();
                 int [][] imgContraster=imageToProcess.contraste(img3); 
                 byte [] nImg3=imageToProcess.imageModifie(imgContraster);
                 imageToProcess.saveImage(nImg3, this.imgRename);
@@ -150,7 +150,7 @@ public class InterfaceUserNB{
             case "AE":
 
                 FileOut(); // récupère le fichier dans lequelle l'ae sera enregistré
-                imageToProcess.barPlotToFile(this.path_img,this.pathFileOut); // sort le fichier d'ae 
+                imageToProcess.barPlotToFile(this.pathFileOut); // sort le fichier d'ae 
                 break;
             
             case "rgbToNb":

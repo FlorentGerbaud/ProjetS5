@@ -66,24 +66,18 @@ import java.util.Set;
  
 */
 
-/**
- *   --------------------  NOTE TRES IMPORTANTE ------------------ 
- *  Si l'image reçu est en couleur alors on stocke le résultat de la conversion 
- *  en niveau de gris dans le tableau de byte de l'attribut pixels.
- *  Sinon Si l'image reçu est en niveau de gris alors l'attribut pixels_color_to_gray
- *  sera initialisé à null (il ne servira donc à rien).
- * 
- */
 
 public class TraitementImageNoirBlanc extends TraitementImage{
 
-    private byte pixels []; //stocke les pixels si l'image est en niveau de gris
+    private byte pixels [];                // stocke les pixels après lecture d'une image en niveau de gris
 
-    private int pixels_color_to_gray []; //stocke les pixels si l'image est au format ARGB
+    private int pixels_color [];           // stocke les pixels après lecture d'une image ARGB
 
-    private int IMG_HEIGHT; //hauteur
+    private byte post_process_pixels [];   // stocke le résultat après un traitement donné (forcément en niveau de gris dans cette classe)
 
-    private int IMG_WIDTH; //largeur
+    private int IMG_HEIGHT;                // hauteur
+
+    private int IMG_WIDTH;                 // largeur
 
 /* 
 
@@ -101,18 +95,21 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         RenderedOp ropimage;                                // a Rendered Operation object will contain the metadata and data
         ropimage = JAI.create("fileload", fn);              // open the file
         BufferedImage bi = ropimage.getAsBufferedImage();   // BufferedImage will contain the data
+        ColorModel cm = ropimage.getColorModel();    
         this.IMG_WIDTH = ropimage.getWidth();
         this.IMG_HEIGHT  = ropimage.getHeight();
-        ColorModel cm = ropimage.getColorModel();  
+        this.post_process_pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
+      
         if ((bi.getType() == BufferedImage.TYPE_BYTE_GRAY) && (cm.getColorSpace().getType() == ColorSpace.TYPE_GRAY)) {
             Raster r = ropimage.getData();                              // from the Raster object we retrieve first a DataBufferByte
             DataBufferByte db = (DataBufferByte) (r.getDataBuffer());   // then the real array of bytes
             this.pixels = db.getData();
-            this.pixels_color_to_gray = null;
+            this.pixels_color= null;
+            
             
         }
         else{  //l'image est en couleur           
-            this.pixels_color_to_gray = bi.getRGB(0, 0, IMG_WIDTH, IMG_HEIGHT, null, 0, IMG_WIDTH);
+            this.pixels_color = bi.getRGB(0, 0, IMG_WIDTH, IMG_HEIGHT, null, 0, IMG_WIDTH);
             this.pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
         }
     }
@@ -178,11 +175,11 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  
 */
 
-    public void barPlotToFile(String name_img, String destination){
+    public void barPlotToFile(String destination){
 
         Path destination_path = Paths.get(destination);
 
-        HashMap<Byte,Integer> sphm = statsHashMap(name_img);
+        HashMap<Byte,Integer> sphm = statsHashMap(super.getNameFile());
 
 
         for (int i = 0; i < sphm.size(); i++) {
@@ -203,45 +200,6 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
-/* 
-
- * #############################################################
- * #          METHODES POUR SAUVEGARDER LES IMAGES             #
- * #############################################################
- 
-*/
-
-
-    public void saveImage(byte[] pxgs, String nameOut){
-        int IMG_WIDTH=getWidth();
-        int IMG_HEIGHT=getHeight();
-        SampleModel sm = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE, IMG_WIDTH, IMG_HEIGHT, 1); 
-        BufferedImage image = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);           
-        image.setData(Raster.createRaster(sm, new DataBufferByte(pxgs, pxgs.length), new Point()));             
-        JAI.create("filestore", image, nameOut, "PNG");
-    }
-
-/* 
-
- * #############################################################
- * #   METHODE POUR TRANSFORMER L'IMAGE SOUS FORME DE MATRICE  #
- * #############################################################
- 
-*/
-
-    public int [][] imageNoirBlanc(String path_img){
-
-        int indexPxg=0;
-        int [][] img = new int [this.IMG_WIDTH][this.IMG_HEIGHT]; //initialisation du tableau image
-        for (int l=0; l<this.IMG_WIDTH; l++){
-            for (int c=0; c<this.IMG_HEIGHT; c++){
-                img[l][c]=(int) this.pixels[indexPxg] & 0xFF;; // puis on le stock
-                indexPxg++;
-            }
-        }
-        return img;
-    }
-
 
 /* 
 
@@ -250,6 +208,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  * ###########################################################################################################
  
 */
+
+
 
 /* 
 
@@ -267,24 +227,16 @@ public class TraitementImageNoirBlanc extends TraitementImage{
      * @return
      */
 
-     public int [][] assombrissement(int [][] img){
+     public void assombrissement(){
 
-        int width=getWidth(); // on recupere la taille de l'image
-        int height=getHeight();
-        int [][] imgAssombri = new int [width][height]; //on défini notre matrice du tableau assombris
-        int pixelAssombri=0;
-        int pixelNormalise=0;
-
-        for (int l=0; l< width; l++){
-            for (int c=0; c< height; c++){
-                pixelAssombri=img[l][c]*img[l][c]; //on applique la methode pour assombrir le pixel
-                pixelNormalise=pixelAssombri/255; //on le normalise
-                imgAssombri[l][c]=pixelNormalise; // puis on le stock
-            }
+        for (int i = 0; i < this.pixels.length; i++) {
+            
+            this.post_process_pixels[i] = (byte) ((((int) this.pixels[i] & 0xFF)*((int) this.pixels[i] & 0xFF))/255);
         }
-
-        return imgAssombri;
     }
+
+
+
 
 
 /* 
@@ -300,56 +252,17 @@ public class TraitementImageNoirBlanc extends TraitementImage{
      * @return
      */
 
-     public int [][] eclairage(int [][] img){
+     public void eclairage(){
 
-        int width=getWidth(); // on recupere la taille de l'image
-        int height=getHeight();
-        int [][] imgEclairer = new int [width][height]; //on défini notre matrice du tableau assombris
-        double pixelEclairer=0;
-        double pixelNormalise=0;
-
-        for (int l=0; l< width; l++){
-            for (int c=0; c< height; c++){
-                pixelEclairer=Math.sqrt((double)img[l][c]); //on applique la methode pour assombrir le pixel
-                pixelNormalise=pixelEclairer*16; //on le normalise
-                imgEclairer[l][c]=(int)pixelNormalise; // puis on le stock
-            }
+        for (int i = 0; i < this.pixels.length; i++) {
+            this.post_process_pixels[i] = (byte) (Math.sqrt((double) ((int) this.pixels[i] & 0xFF))*16);
         }
 
-        return imgEclairer;
+    
     }
 
-/* 
 
- * #############################################################
- * #             REECRITURE IMAGE POUR SAUVEGARDE              #
- * #############################################################
- 
-*/
-    /**
-     * ---- METHODE SORTIE IMAGE
-     * cette méthode réécrit l'image sous le format d'un tableau de byte afin de pouvoir sauvegarder l'image
-     * @param img
-     * @return
-     */
 
-    public byte [] imageModifie(int [][] img){
-
-        int width=getWidth(); //on recupere la taille de l'image
-        int height=getHeight();
-        byte [] imgModif = new byte [width*height]; //on definit notre tableau de sortie
-        int indexTabImg=0;
-        byte b;
-
-        for(int l=0; l<width; l++){
-            for (int c=0; c<height; c++){
-                b=(byte) img[l][c]; //on caste notre int pour avoir un sa valeur en byte signé
-                imgModif[indexTabImg]=b; //puis on le stock
-                indexTabImg++;
-            }
-        }
-        return imgModif;
-    }
 
 
 /* 
@@ -364,22 +277,17 @@ public class TraitementImageNoirBlanc extends TraitementImage{
      * @return
      */
 
-     public int [][] contraste(int [][] img){
+     public void contraste(){
 
-        int width=getWidth(); // on recupere la taille de l'image
-        int height=getHeight();
-        int [][] imgContraster = new int [width][height]; //on défini notre matrice du tableau contraste
-        int pixelContraster=0;
-
-        for (int l=0; l< width; l++){
-            for (int c=0; c< height; c++){
-                pixelContraster=255-img[l][c]; //on applique la methode pour contraster le pixel
-                imgContraster[l][c]=pixelContraster; // puis on le stock
-            }
+        for (int i = 0; i < this.pixels.length; i++) {
+            this.post_process_pixels[i] = (byte) (255 - this.pixels[i]);
         }
-
-        return imgContraster;
+       
     }
+
+
+
+
 
 /* 
 
@@ -394,9 +302,12 @@ public class TraitementImageNoirBlanc extends TraitementImage{
      * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
      * @return octet (int) : le canal Alpha (sur 1 octet = 8 bits)
      */
+
     public int getA(int pixel){
         return (pixel >> 24) & 0xFF;
     }
+
+
 
     /**
      * 
@@ -408,6 +319,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         return (pixel >> 16) & 0xFF;
     }
 
+
+
     /**
      * 
      * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
@@ -417,6 +330,9 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     public int getG(int pixel){
         return (pixel >> 8) & 0xFF;
     }
+
+
+
 
     /**
      * 
@@ -428,6 +344,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         return pixel & 0xFF;
     }
 
+
+
     /**
      * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
      * au format ARGB
@@ -437,47 +355,50 @@ public class TraitementImageNoirBlanc extends TraitementImage{
      * @param b (int) : canal Blue
      * @return
      */
+
     public int getPixel(int a, int r, int g, int b){
 
         return ((a << 24) | (r << 16) | (g << 8) | b);
     }
 
+
+
+
     /**
      * @brief cette méthode parcours le tableau de (int) de l'image ARGB et rempli le tableau de (byte)
      * en transformant chaque plixel en niveau de GRAY sur un seul canal.
      */
+
     public void fromColorToGray(){
 
         int r,g,b = 0;
 
         int pixel = 0;
 
-        for (int i = 0; i < this.pixels_color_to_gray.length; i++) {
+        for (int i = 0; i < this.pixels_color.length; i++) {
 
-            r = getR(pixels_color_to_gray[i]);
+            r = getR(pixels_color[i]);
 
-            g = getG(pixels_color_to_gray[i]);
+            g = getG(pixels_color[i]);
 
-            b = getB(pixels_color_to_gray[i]);
+            b = getB(pixels_color[i]);
 
             pixel = (int) (0.21*r + 0.72*g + 0.07*b);
 
-            this.pixels[i] = (byte) pixel;
+            this.post_process_pixels[i] = (byte) pixel;
 
         }
     }
 
+
+
+
     /**
      * @brief cette méthode trasnsforme une image en ARGB en GRAY et écrit le résultat dans un fichier au format png.
      */
-    public void saveGrayconversion(){
 
-        // Appel de la fonction pour transformation du tableau de int ARGB 
-        // en tablea de byte de GRAY (attribut de la méthode)
-        fromColorToGray(); 
+    public void saveImage(String dest_file){
 
-        //  -------------- ECRITURE DANS FICHIER DESTINATION -------------
-        
         // Start by defining the type of image we want to save
         // let's create a model of type TYPE_BYTE, to store an image of
         // IMG_WIDTH et IMG_HEIGHT dimensions. Last argument is the number of bands
@@ -489,12 +410,10 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         // dimension. It's also a TYPE_BYTE_GRAY image
         BufferedImage image = new BufferedImage(this.IMG_WIDTH, this.IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
         // let's put the data from b (declared as "byte[] b;")
-        image.setData(Raster.createRaster(sm, new DataBufferByte(this.pixels, this.pixels.length), new Point()));
+        image.setData(Raster.createRaster(sm, new DataBufferByte(this.post_process_pixels, this.post_process_pixels.length), new Point()));
         // and save it in a file!
         // here, the image will be called "res-gs.png"
-        JAI.create("filestore",image,"res-gs.png","PNG");
+        JAI.create("filestore",image,dest_file,"PNG");
 
     }
-
-
 }

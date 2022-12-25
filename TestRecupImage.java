@@ -8,7 +8,18 @@ public class TestRecupImage {
     public static void main(String[] args){
 
         TraitementImageNoirBlanc imageToProcess = new TraitementImageNoirBlanc(args[0]);
-        imageToProcess.barPlotToFile(args[0],args[1]);
+        imageToProcess.saveGrayconversion();
+        int x =1443434;
+        System.out.printf("res = %04X%n", x);
+        int r = imageToProcess.getR(x);
+        int g = imageToProcess.getG(x);
+        int b = imageToProcess.getB(x);
+        int pixel = (int) (0.21*r + 0.72*g + 0.07*b);
+        System.out.println(r);
+        System.out.println(g);
+        System.out.println(b);
+        System.out.println("pixel = "+(byte)pixel);
+
 
         // int y=-1447447;
         // String f =String.format("%08x", y);
@@ -31,27 +42,27 @@ public class TestRecupImage {
 
         
 
-        //applique un traitement d'assombrissement sur l'image de base
-        int img[][] = imageToProcess.imageNoirBlanc(args[0]); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
-        int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement
-        byte [] nImg=imageToProcess.imageModifie(imgAssombri1); // écrit l'image assombris dans un tableau de byte
-        imageToProcess.saveImage(nImg, "MaGeuleAssombrie.png"); // puis sauvegarde l'image
+        // //applique un traitement d'assombrissement sur l'image de base
+        // int img[][] = imageToProcess.imageNoirBlanc(args[0]); // transforme notre tableau de byte en une matrice d'entier de 0 à 255
+        // int [][] imgAssombri1=imageToProcess.assombrissement(img); // applique la procdeure d'assombrissement
+        // byte [] nImg=imageToProcess.imageModifie(imgAssombri1); // écrit l'image assombris dans un tableau de byte
+        // imageToProcess.saveImage(nImg, "MaGeuleAssombrie.png"); // puis sauvegarde l'image
 
-        //applique un traitement d'éclairage sur l'image de base
-        int [][] imgEclairer1=imageToProcess.eclairage(img); 
-        byte [] nImg2=imageToProcess.imageModifie(imgEclairer1);
-        imageToProcess.saveImage(nImg2, "MaGeuleEclairer.png");
+        // //applique un traitement d'éclairage sur l'image de base
+        // int [][] imgEclairer1=imageToProcess.eclairage(img); 
+        // byte [] nImg2=imageToProcess.imageModifie(imgEclairer1);
+        // imageToProcess.saveImage(nImg2, "MaGeuleEclairer.png");
 
-        //applique un traitement de contraste sur l'image de base
-        int [][] imgContraster=imageToProcess.contraste(img); 
-        byte [] nImg4=imageToProcess.imageModifie(imgContraster);
-        imageToProcess.saveImage(nImg4, "MaGeuleContraster.png");
+        // //applique un traitement de contraste sur l'image de base
+        // int [][] imgContraster=imageToProcess.contraste(img); 
+        // byte [] nImg4=imageToProcess.imageModifie(imgContraster);
+        // imageToProcess.saveImage(nImg4, "MaGeuleContraster.png");
 
-        //applique un eclairage sur l'image assombris
-        int img2[][] = imageToProcess.imageNoirBlanc("MaGeuleAssombrie.png");
-        int [][] imgRestaurer=imageToProcess.eclairage(img2); 
-        byte [] nImg3=imageToProcess.imageModifie(imgRestaurer);
-        imageToProcess.saveImage(nImg3, "MaGeuleRestaurer.png");
+        // //applique un eclairage sur l'image assombris
+        // int img2[][] = imageToProcess.imageNoirBlanc("MaGeuleAssombrie.png");
+        // int [][] imgRestaurer=imageToProcess.eclairage(img2); 
+        // byte [] nImg3=imageToProcess.imageModifie(imgRestaurer);
+        // imageToProcess.saveImage(nImg3, "MaGeuleRestaurer.png");
 
 
     }

@@ -66,13 +66,24 @@ import java.util.Set;
  
 */
 
+/**
+ *   --------------------  NOTE TRES IMPORTANTE ------------------ 
+ *  Si l'image reçu est en couleur alors on stocke le résultat de la conversion 
+ *  en niveau de gris dans le tableau de byte de l'attribut pixels.
+ *  Sinon Si l'image reçu est en niveau de gris alors l'attribut pixels_color_to_gray
+ *  sera initialisé à null (il ne servira donc à rien).
+ * 
+ */
+
 public class TraitementImageNoirBlanc extends TraitementImage{
 
-    private byte pixels [];
+    private byte pixels []; //stocke les pixels si l'image est en niveau de gris
 
-    private int IMG_HEIGHT;
+    private int pixels_color_to_gray []; //stocke les pixels si l'image est au format ARGB
 
-    private int IMG_WIDTH;
+    private int IMG_HEIGHT; //hauteur
+
+    private int IMG_WIDTH; //largeur
 
 /* 
 
@@ -97,13 +108,13 @@ public class TraitementImageNoirBlanc extends TraitementImage{
             Raster r = ropimage.getData();                              // from the Raster object we retrieve first a DataBufferByte
             DataBufferByte db = (DataBufferByte) (r.getDataBuffer());   // then the real array of bytes
             this.pixels = db.getData();
+            this.pixels_color_to_gray = null;
             
         }
-        else{
-            this.pixels = null;
+        else{  //l'image est en couleur           
+            this.pixels_color_to_gray = bi.getRGB(0, 0, IMG_WIDTH, IMG_HEIGHT, null, 0, IMG_WIDTH);
+            this.pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
         }
-
-
     }
 /* 
 
@@ -369,5 +380,121 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
         return imgContraster;
     }
+
+/* 
+
+ * #############################################################
+ * #       TRANSFORMATION IMG_COULEUR EN ECHELLE DE GRIS       #
+ * #############################################################
+ 
+*/
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Alpha (sur 1 octet = 8 bits)
+     */
+    public int getA(int pixel){
+        return (pixel >> 24) & 0xFF;
+    }
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Red (sur 1 octet = 8 bits)
+     */
+
+    public int getR(int pixel){
+        return (pixel >> 16) & 0xFF;
+    }
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Green (sur 1 octet = 8 bits)
+     */
+
+    public int getG(int pixel){
+        return (pixel >> 8) & 0xFF;
+    }
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Blue (sur 1 octet = 8 bits)
+     */
+
+    public int getB(int pixel){
+        return pixel & 0xFF;
+    }
+
+    /**
+     * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
+     * au format ARGB
+     * @param a (int) : canal Alpha
+     * @param r (int) : canal Red
+     * @param g (int) : canal Green
+     * @param b (int) : canal Blue
+     * @return
+     */
+    public int getPixel(int a, int r, int g, int b){
+
+        return ((a << 24) | (r << 16) | (g << 8) | b);
+    }
+
+    /**
+     * @brief cette méthode parcours le tableau de (int) de l'image ARGB et rempli le tableau de (byte)
+     * en transformant chaque plixel en niveau de GRAY sur un seul canal.
+     */
+    public void fromColorToGray(){
+
+        int r,g,b = 0;
+
+        int pixel = 0;
+
+        for (int i = 0; i < this.pixels_color_to_gray.length; i++) {
+
+            r = getR(pixels_color_to_gray[i]);
+
+            g = getG(pixels_color_to_gray[i]);
+
+            b = getB(pixels_color_to_gray[i]);
+
+            pixel = (int) (0.21*r + 0.72*g + 0.07*b);
+
+            this.pixels[i] = (byte) pixel;
+
+        }
+    }
+
+    /**
+     * @brief cette méthode trasnsforme une image en ARGB en GRAY et écrit le résultat dans un fichier au format png.
+     */
+    public void saveGrayconversion(){
+
+        // Appel de la fonction pour transformation du tableau de int ARGB 
+        // en tablea de byte de GRAY (attribut de la méthode)
+        fromColorToGray(); 
+
+        //  -------------- ECRITURE DANS FICHIER DESTINATION -------------
+        
+        // Start by defining the type of image we want to save
+        // let's create a model of type TYPE_BYTE, to store an image of
+        // IMG_WIDTH et IMG_HEIGHT dimensions. Last argument is the number of bands
+        // for grayscale = 1 band (no surprises! gray-scale needs only one channel)
+        SampleModel sm = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE,IMG_WIDTH,IMG_HEIGHT,1);
+        // The same way we got the image data in a BufferedImage when opening a file
+        // we now need to create a BufferedImage where to put the image data
+        // The BufferedImage object will be an image of IMG_WIDTH and IMG_HEIGHT
+        // dimension. It's also a TYPE_BYTE_GRAY image
+        BufferedImage image = new BufferedImage(this.IMG_WIDTH, this.IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+        // let's put the data from b (declared as "byte[] b;")
+        image.setData(Raster.createRaster(sm, new DataBufferByte(this.pixels, this.pixels.length), new Point()));
+        // and save it in a file!
+        // here, the image will be called "res-gs.png"
+        JAI.create("filestore",image,"res-gs.png","PNG");
+
+    }
+
 
 }

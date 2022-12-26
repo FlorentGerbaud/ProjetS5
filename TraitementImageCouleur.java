@@ -233,6 +233,7 @@ public class TraitementImageCouleur extends TraitementImage {
         int [] occR = {0,0,0};
         int [] occG = {0,0,0};
         int [] occB = {0,0,0};
+        int incr=0;
 
         HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances de gris
 
@@ -245,38 +246,41 @@ public class TraitementImageCouleur extends TraitementImage {
             System.out.println("test : "+occ[0]+";"+occ[1]+";"+occ[2]);
 
             r = getR(this.pixels[i]);
-            //System.out.println(r);
 
             g = getG(this.pixels[i]);
 
             b = getB(this.pixels[i]);
 
-            occ = sphm.get(r); //on recupere l'occurence du rouge
-            //System.out.println("test : "+occ[0]+";"+occ[1]+";"+occ[2]);
+            //occ = sphm.get(r); //on recupere l'occurence du rouge
+    
             for (int R=0; R<3; R++){
+                incr=sphm.get(r)[R];
                 if(R==0){
-                    occR[R]=occ[R]+1;
+                    incr++;
                 }
-                occR[R]=occ[R];
+                occR[R]=incr;
             }
             sphm.put(r,occR); //on remet le tableau d'incrément à sa place
             
             occ = sphm.get(g);
             //System.out.println("test2 : "+occ[0]+";"+occ[1]+";"+occ[2]);
             for (int G=0; G<3; G++){
+                incr=sphm.get(g)[G];
                 if(G==1){
-                    occG[G]=occ[G]+1;
+                    incr++;
                 }
-                occG[G]=occ[G];
+                occG[G]=incr;
             }
             sphm.put(g,occG); //on remet le tableau d'incrément à sa place
 
             occ = sphm.get(b);
+    
             for (int B=0; B<3; B++){
+                incr=sphm.get(b)[B];
                 if(B==2){
-                    occB[B]=occ[B]+1;
+                    incr++;
                 }
-                occB[B]=occ[B];
+                occB[B]=incr;
             }
             sphm.put(b,occB); //on remet le tableau d'incrément à sa place
 

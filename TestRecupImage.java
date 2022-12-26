@@ -19,9 +19,9 @@ public class TestRecupImage {
 
         TraitementImageCouleur imageToProcessColor = new TraitementImageCouleur(args[0]);
 
-        // imageToProcess.eclairage();
-        // imageToProcess.assombrissement();
-        // imageToProcess.saveImage(args[1]);
+        imageToProcess.eclairage();
+        //imageToProcess.assombrissement();
+        imageToProcess.saveImage(args[1]);
 
         //imageToProcessColor.toAffiche();
         //imageToProcessColor.toSimple();
@@ -29,21 +29,7 @@ public class TestRecupImage {
         //imageToProcessColor.barPlotToFileCol(args[1]);
 
 
-            int [] occ = {0,0,0}; 
-            int [] occR = {0,0,0};
-            int [] occG = {0,0,0};
-            int [] occB = {0,0,0};
-            int incr=0;
-    
-            HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances de gris
-    
-           for (int i = 0; i < 3; i++) {
-               sphm.put(i,occ);
-           }
-    
-           for (int i = 0; i < 3; i++) {
-            System.out.println(sphm.get(i));
-        }
+            
     
     }
 }

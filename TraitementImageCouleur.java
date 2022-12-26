@@ -128,52 +128,6 @@ public class TraitementImageCouleur extends TraitementImage {
  
 */
 
-    public int getR(int pixel){
-        return (pixel >> 16) & 0xFF;
-    }
-
-
-
-    /**
-     * 
-     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
-     * @return octet (int) : le canal Green (sur 1 octet = 8 bits)
-     */
-
-    public int getG(int pixel){
-        return (pixel >> 8) & 0xFF;
-    }
-
-
-
-
-    /**
-     * 
-     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
-     * @return octet (int) : le canal Blue (sur 1 octet = 8 bits)
-     */
-
-    public int getB(int pixel){
-        return pixel & 0xFF;
-    }
-
-
-
-    /**
-     * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
-     * au format ARGB
-     * @param a (int) : canal Alpha
-     * @param r (int) : canal Red
-     * @param g (int) : canal Green
-     * @param b (int) : canal Blue
-     * @return
-     */
-
-    public int getPixel(int a, int r, int g, int b){
-
-        return ((a << 24) | (r << 16) | (g << 8) | b);
-    }
-
     /**
      * Fonction appelée dans le constructeur pour initialiser la matrice de pixels.
      */
@@ -222,53 +176,55 @@ public class TraitementImageCouleur extends TraitementImage {
  
 */
 
-
+   /**
+    * @brief Methode qui vas se charger de remplir un Hashmap composé de tableau [R,G,B] avec pour
+    *clé la nuance de couleur entre [0;255] afin de savoir conbien de fois chaque nuance apparait
+    * @param name_img (String) qui est le nom de l'image
+    * @return HashMap<Integer,int []> avec en clé les nuance [0,255] en valeur des tableau [R,G,B]
+    */
    public HashMap<Integer,int []> statsHashMapCol(String name_img){
 
 
         int r=0; //initialisation des 3 couleurs
         int g=0;
         int b=0;
-        int [] occ = {0,0,0}; 
-        int [] occR = {0,0,0};
-        int [] occG = {0,0,0};
-        int [] occB = {0,0,0};
-        int incr=0;
+        int [] occ = new int[3]; //on initialise un tableau d'occurence [R,G,B]
 
-        HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances de gris
+        HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances pour R, G et B
 
        for (int i = 0; i < 256; i++) {
-           sphm.put(i,new int[3]);
+           sphm.put(i,new int[3]); //on initialise la boucle avec 256 tableau tous instancier avec new pour pouvoir modifier les valeurs de chaque tableau de manière indépendante
        }
 
        for (int i = 0; i < pixels.length; i++) {
 
-            r = getR(this.pixels[i]);
+            r = getR(this.pixels[i]); // on récupère les composantes R,G,B d'un certains pixels pi
 
             g = getG(this.pixels[i]);
 
             b = getB(this.pixels[i]);
-
-            //occ = sphm.get(r); //on recupere l'occurence du rouge
     
-            occ=sphm.get(r);
-            occ[0]=occ[0]+1;
-            sphm.put(r,occ);
+            occ=sphm.get(r); //on recupere le tableau des occurance en position de la nuance rouge
+            occ[0]=occ[0]+1; // on incrémente la composante R
+            sphm.put(r,occ); // on réinjecte le tableau modifié dans e Hashmap
 
-            occ=sphm.get(g);
+            occ=sphm.get(g); // On fait de meme avec les autres couleurs
             occ[1]=occ[1]+1;
             sphm.put(g,occ);
 
             occ=sphm.get(b);
             occ[2]=occ[2]+1;
             sphm.put(b,occ);
-
        }
 
        return sphm; 
 
    }
 
+   /**
+    * 
+    * @param destination fichier .txt de sortie
+    */
    public void barPlotToFileCol(String destination){
 
     Path destination_path = Paths.get(destination);
@@ -281,9 +237,9 @@ public class TraitementImageCouleur extends TraitementImage {
         try (BufferedWriter w = Files.newBufferedWriter(destination_path, StandardOpenOption.CREATE,
             StandardOpenOption.APPEND)) {
 
-                w.write(String.valueOf(occRGB));
+                w.write(String.valueOf(occRGB)); //écriture de chaque intensité du pixel
                 w.write(";");
-                w.write(String.valueOf(sphm.get(occRGB)[0]));
+                w.write(String.valueOf(sphm.get(occRGB)[0])); // puis de chaque occurance de la composante
                 w.write(";");
                 w.write(String.valueOf(sphm.get(occRGB)[1]));
                 w.write(";");
@@ -330,6 +286,44 @@ public class TraitementImageCouleur extends TraitementImage {
 
 
 
+    }
+
+    /* 
+
+ * ##########################################################################################
+ * #   METHODE UTILE POUR LES TRAITEMENTS --   #
+ * ##########################################################################################
+ 
+*/
+
+
+    public int getR(int pixel){
+        return (pixel >> 16) & 0xFF;
+    }
+
+
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Green (sur 1 octet = 8 bits)
+     */
+
+    public int getG(int pixel){
+        return (pixel >> 8) & 0xFF;
+    }
+
+
+
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Blue (sur 1 octet = 8 bits)
+     */
+
+    public int getB(int pixel){
+        return pixel & 0xFF;
     }
 
 

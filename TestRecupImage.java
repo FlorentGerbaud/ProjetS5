@@ -19,14 +19,20 @@ public class TestRecupImage {
 
         TraitementImageCouleur imageToProcessColor = new TraitementImageCouleur(args[0]);
 
-        imageToProcess.eclairage();
+        //imageToProcess.eclairage();
         //imageToProcess.assombrissement();
-        imageToProcess.saveImage(args[1]);
+        //imageToProcess.saveImage(args[1]);
 
         //imageToProcessColor.toAffiche();
         //imageToProcessColor.toSimple();
 
-        //imageToProcessColor.barPlotToFileCol(args[1]);
+        /**
+         * Utilisation AE : 
+         * TestRecupImage <nom/de/image.png> <nom_fichier_destination.txt>
+         * si tu veux verifier tu peux le faire avec matlab
+         */
+
+        imageToProcessColor.barPlotToFileCol(args[1]);
 
 
             

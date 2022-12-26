@@ -20,10 +20,6 @@ public class TestRecupImage {
         imageToProcess.assombrissement();
         imageToProcess.saveImage(args[1]);
 
-        imageToProcessColor.toAffiche();
-
-
-
     }
 }
 

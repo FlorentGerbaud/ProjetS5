@@ -16,11 +16,13 @@ public class TestRecupImage {
 
         TraitementImageCouleur imageToProcessColor = new TraitementImageCouleur(args[0]);
 
-        imageToProcess.eclairage();
-        imageToProcess.assombrissement();
-        imageToProcess.saveImage(args[1]);
+        // imageToProcess.eclairage();
+        // imageToProcess.assombrissement();
+        // imageToProcess.saveImage(args[1]);
 
-        imageToProcessColor.toAffiche();
+        //imageToProcessColor.toAffiche();
+        //imageToProcessColor.toSimple();
+        imageToProcessColor.barPlotToFileCol(args[1]);
 
 
 

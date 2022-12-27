@@ -9,12 +9,7 @@ public class Test{
 
   public static void main(String[] args) {
 
-    byte k = -100;
-
-    int j = (int) k;
-
-    System.out.println(k);
-    System.out.println(j);
+    
   }
 }
 

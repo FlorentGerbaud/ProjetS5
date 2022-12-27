@@ -10,6 +10,7 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.ColorModel;
@@ -20,6 +21,7 @@ import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 import java.awt.image.SampleModel;
+import java.awt.image.DirectColorModel;
 
 /* 
 
@@ -128,52 +130,6 @@ public class TraitementImageCouleur extends TraitementImage {
  
 */
 
-    public int getR(int pixel){
-        return (pixel >> 16) & 0xFF;
-    }
-
-
-
-    /**
-     * 
-     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
-     * @return octet (int) : le canal Green (sur 1 octet = 8 bits)
-     */
-
-    public int getG(int pixel){
-        return (pixel >> 8) & 0xFF;
-    }
-
-
-
-
-    /**
-     * 
-     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
-     * @return octet (int) : le canal Blue (sur 1 octet = 8 bits)
-     */
-
-    public int getB(int pixel){
-        return pixel & 0xFF;
-    }
-
-
-
-    /**
-     * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
-     * au format ARGB
-     * @param a (int) : canal Alpha
-     * @param r (int) : canal Red
-     * @param g (int) : canal Green
-     * @param b (int) : canal Blue
-     * @return
-     */
-
-    public int getPixel(int a, int r, int g, int b){
-
-        return ((a << 24) | (r << 16) | (g << 8) | b);
-    }
-
     /**
      * Fonction appelée dans le constructeur pour initialiser la matrice de pixels.
      */
@@ -222,70 +178,55 @@ public class TraitementImageCouleur extends TraitementImage {
  
 */
 
-
+   /**
+    * @brief Methode qui vas se charger de remplir un Hashmap composé de tableau [R,G,B] avec pour
+    *clé la nuance de couleur entre [0;255] afin de savoir conbien de fois chaque nuance apparait
+    * @param name_img (String) qui est le nom de l'image
+    * @return HashMap<Integer,int []> avec en clé les nuance [0,255] en valeur des tableau [R,G,B]
+    */
    public HashMap<Integer,int []> statsHashMapCol(String name_img){
 
 
         int r=0; //initialisation des 3 couleurs
         int g=0;
         int b=0;
-        int [] occ = {0,0,0}; 
-        int [] occR = {0,0,0};
-        int [] occG = {0,0,0};
-        int [] occB = {0,0,0};
+        int [] occ = new int[3]; //on initialise un tableau d'occurence [R,G,B]
 
-        HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances de gris
+        HashMap<Integer,int []> sphm = new HashMap<Integer,int []>(256); //car 256 nuances pour R, G et B
 
        for (int i = 0; i < 256; i++) {
-           sphm.put(i,occ);
+           sphm.put(i,new int[3]); //on initialise la boucle avec 256 tableau tous instancier avec new pour pouvoir modifier les valeurs de chaque tableau de manière indépendante
        }
 
        for (int i = 0; i < pixels.length; i++) {
 
-            System.out.println("test : "+occ[0]+";"+occ[1]+";"+occ[2]);
-
-            r = getR(this.pixels[i]);
-            //System.out.println(r);
+            r = getR(this.pixels[i]); // on récupère les composantes R,G,B d'un certains pixels pi
 
             g = getG(this.pixels[i]);
 
             b = getB(this.pixels[i]);
+    
+            occ=sphm.get(r); //on recupere le tableau des occurance en position de la nuance rouge
+            occ[0]=occ[0]+1; // on incrémente la composante R
+            sphm.put(r,occ); // on réinjecte le tableau modifié dans e Hashmap
 
-            occ = sphm.get(r); //on recupere l'occurence du rouge
-            //System.out.println("test : "+occ[0]+";"+occ[1]+";"+occ[2]);
-            for (int R=0; R<3; R++){
-                if(R==0){
-                    occR[R]=occ[R]+1;
-                }
-                occR[R]=occ[R];
-            }
-            sphm.put(r,occR); //on remet le tableau d'incrément à sa place
-            
-            occ = sphm.get(g);
-            //System.out.println("test2 : "+occ[0]+";"+occ[1]+";"+occ[2]);
-            for (int G=0; G<3; G++){
-                if(G==1){
-                    occG[G]=occ[G]+1;
-                }
-                occG[G]=occ[G];
-            }
-            sphm.put(g,occG); //on remet le tableau d'incrément à sa place
+            occ=sphm.get(g); // On fait de meme avec les autres couleurs
+            occ[1]=occ[1]+1;
+            sphm.put(g,occ);
 
-            occ = sphm.get(b);
-            for (int B=0; B<3; B++){
-                if(B==2){
-                    occB[B]=occ[B]+1;
-                }
-                occB[B]=occ[B];
-            }
-            sphm.put(b,occB); //on remet le tableau d'incrément à sa place
-
+            occ=sphm.get(b);
+            occ[2]=occ[2]+1;
+            sphm.put(b,occ);
        }
 
        return sphm; 
 
    }
 
+   /**
+    * 
+    * @param destination fichier .txt de sortie
+    */
    public void barPlotToFileCol(String destination){
 
     Path destination_path = Paths.get(destination);
@@ -298,9 +239,9 @@ public class TraitementImageCouleur extends TraitementImage {
         try (BufferedWriter w = Files.newBufferedWriter(destination_path, StandardOpenOption.CREATE,
             StandardOpenOption.APPEND)) {
 
-                w.write(String.valueOf(occRGB));
+                w.write(String.valueOf(occRGB)); //écriture de chaque intensité du pixel
                 w.write(";");
-                w.write(String.valueOf(sphm.get(occRGB)[0]));
+                w.write(String.valueOf(sphm.get(occRGB)[0])); // puis de chaque occurance de la composante
                 w.write(";");
                 w.write(String.valueOf(sphm.get(occRGB)[1]));
                 w.write(";");
@@ -335,20 +276,131 @@ public class TraitementImageCouleur extends TraitementImage {
 
     public void assombrissement(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
 
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a, (r*r)/255, (g*g)/255, (b*b)/255);
+        }
     }
    
     public void eclairage(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
+
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a,(int) Math.sqrt((double) r)*16, (int) Math.sqrt((double) g)*16, (int) Math.sqrt((double) b)*16);
+        }
 
     }
    
     public void contraste(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
 
-
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a,255-r, 255-g, 255-b);
+        }
     }
 
+    /* 
+
+ * ##########################################################################################
+ * #   METHODE ENREGISTREMENT IMAGE --   #
+ * ##########################################################################################
+ 
+*/
+
+    public void saveImgColor(String nameOut){
+
+
+    DataBufferInt dataBuffer = new DataBufferInt(this.post_process_pixels, this.post_process_pixels.length);
+    int samplesPerPixel = 4;
+    ColorModel colorModel = new DirectColorModel(32,0xFF0000,0xFF00,0xFF,0xFF000000);
+    WritableRaster raster = Raster.createPackedRaster(dataBuffer, this.IMG_WIDTH, this.IMG_HEIGHT, this.IMG_WIDTH,((DirectColorModel) colorModel).getMasks(), null);
+    BufferedImage image = new BufferedImage(colorModel, raster, colorModel.isAlphaPremultiplied(), null);
+    RenderedOp op1 = JAI.create("filestore", image, nameOut, "png");
+    }
+
+    /* 
+
+ * ##########################################################################################
+ * #   METHODE UTILE POUR LES TRAITEMENTS --   #
+ * ##########################################################################################
+ 
+*/
+
+    public int getA(int pixel){
+        return (pixel >> 24) & 0xFF;
+    }
+
+
+    public int getR(int pixel){
+        return (pixel >> 16) & 0xFF;
+    }
+
+
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Green (sur 1 octet = 8 bits)
+     */
+
+    public int getG(int pixel){
+        return (pixel >> 8) & 0xFF;
+    }
+
+
+
+
+    /**
+     * 
+     * @param pixel (int) : le pixel codé sur 32 bits avec 4 canaux en ARGB.
+     * @return octet (int) : le canal Blue (sur 1 octet = 8 bits)
+     */
+
+    public int getB(int pixel){
+        return pixel & 0xFF;
+    }
+
+    /**
+     * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
+     * au format ARGB
+     * @param a (int) : canal Alpha
+     * @param r (int) : canal Red
+     * @param g (int) : canal Green
+     * @param b (int) : canal Blue
+     * @return
+     */
+
+     public int getPixel(int a, int r, int g, int b){
+
+        return ((a << 24) | (r << 16) | (g << 8) | b);
+    }
 
 
 

@@ -21,6 +21,7 @@ public class TestRecupImage {
 
         //imageToProcess.eclairage();
         //imageToProcess.assombrissement();
+        //imageToProcess.fromColorToGray();
         //imageToProcess.saveImage(args[1]);
 
         //imageToProcessColor.toAffiche();
@@ -33,6 +34,16 @@ public class TestRecupImage {
          */
 
         imageToProcessColor.barPlotToFileCol(args[1]);
+
+        /**
+         * Utilisation : 
+         * TestRecupImage <nom/de/image.png> <nom_fichier_destination.png (uniquement pour imageNB pour l'instant)>
+         */
+        imageToProcessColor.assombrissement();
+        imageToProcessColor.eclairage();
+        imageToProcessColor.contraste();
+        imageToProcessColor.saveImgColor(args[1]);
+        
 
 
             

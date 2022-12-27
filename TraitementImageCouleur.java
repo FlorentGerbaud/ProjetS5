@@ -10,6 +10,7 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.ColorModel;
@@ -20,6 +21,7 @@ import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 import java.awt.image.SampleModel;
+import java.awt.image.DirectColorModel;
 
 /* 
 
@@ -274,18 +276,73 @@ public class TraitementImageCouleur extends TraitementImage {
 
     public void assombrissement(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
 
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a, (r*r)/255, (g*g)/255, (b*b)/255);
+        }
     }
    
     public void eclairage(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
+
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a,(int) Math.sqrt((double) r)*16, (int) Math.sqrt((double) g)*16, (int) Math.sqrt((double) b)*16);
+        }
 
     }
    
     public void contraste(){
 
+        int a=0;
+        int r=0;
+        int g=0;
+        int b=0;
+
+        
+        for (int i = 0; i < this.pixels.length; i++) {
+            a=getA(this.pixels[i]);
+            r=getR(this.pixels[i]);
+            g=getG(this.pixels[i]);
+            b=getB(this.pixels[i]);
+            this.post_process_pixels[i]=getPixel(a,255-r, 255-g, 255-b);
+        }
+    }
+
+    /* 
+
+ * ##########################################################################################
+ * #   METHODE ENREGISTREMENT IMAGE --   #
+ * ##########################################################################################
+ 
+*/
+
+    public void saveImgColor(String nameOut){
 
 
+    DataBufferInt dataBuffer = new DataBufferInt(this.post_process_pixels, this.post_process_pixels.length);
+    int samplesPerPixel = 4;
+    ColorModel colorModel = new DirectColorModel(32,0xFF0000,0xFF00,0xFF,0xFF000000);
+    WritableRaster raster = Raster.createPackedRaster(dataBuffer, this.IMG_WIDTH, this.IMG_HEIGHT, this.IMG_WIDTH,((DirectColorModel) colorModel).getMasks(), null);
+    BufferedImage image = new BufferedImage(colorModel, raster, colorModel.isAlphaPremultiplied(), null);
+    RenderedOp op1 = JAI.create("filestore", image, nameOut, "png");
     }
 
     /* 
@@ -295,6 +352,10 @@ public class TraitementImageCouleur extends TraitementImage {
  * ##########################################################################################
  
 */
+
+    public int getA(int pixel){
+        return (pixel >> 24) & 0xFF;
+    }
 
 
     public int getR(int pixel){
@@ -326,6 +387,20 @@ public class TraitementImageCouleur extends TraitementImage {
         return pixel & 0xFF;
     }
 
+    /**
+     * @brief cette méthode récupère les 4 canaux de l'image en type int et les regroupent pour former un pixel
+     * au format ARGB
+     * @param a (int) : canal Alpha
+     * @param r (int) : canal Red
+     * @param g (int) : canal Green
+     * @param b (int) : canal Blue
+     * @return
+     */
+
+     public int getPixel(int a, int r, int g, int b){
+
+        return ((a << 24) | (r << 16) | (g << 8) | b);
+    }
 
 
 

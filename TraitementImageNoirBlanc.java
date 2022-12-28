@@ -35,6 +35,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 
 /* 
 
@@ -45,6 +46,7 @@ import java.io.BufferedWriter;
 */
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /* 
 
@@ -144,7 +146,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  
 */
 
-    public HashMap<Byte,Integer> statsHashMap(String name_img){
+    private HashMap<Byte,Integer> statsHashMap(String name_img){
 
         HashMap<Byte,Integer> sphm = new HashMap<Byte,Integer>(256); //car 256 nuances de gris
 
@@ -175,12 +177,20 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  
 */
 
-    public void barPlotToFile(String destination){
+    public void barPlotToFile(String destination) throws FileNotFoundException{
 
         Path destination_path = Paths.get(destination);
 
         HashMap<Byte,Integer> sphm = statsHashMap(super.getNameFile());
 
+        boolean iscreated = super.createFile(destination); // file doesn't exist , so it's created
+
+        if(iscreated == false){                            // file already exist so clear file
+
+            PrintWriter writer = new PrintWriter(destination);
+            writer.print("");
+            writer.close();
+        }
 
         for (int i = 0; i < sphm.size(); i++) {
             

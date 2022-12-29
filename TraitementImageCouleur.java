@@ -257,20 +257,19 @@ public class TraitementImageCouleur extends TraitementImage {
 }
 
 
-
-
-
-
-
-
-
-
-
 /* 
 
  * ##########################################################################################
  * #   METHODE DE TRAITEMENT DE L'IMAGE -- COMMUNE A LA CLASSE TRAITEMENTNOITETBLANC.JAVA   #
  * ##########################################################################################
+ 
+*/
+
+/* 
+
+ * #############################################################
+ * #                       ASSOMBRISSEMENT                     #
+ * #############################################################
  
 */
 
@@ -290,6 +289,14 @@ public class TraitementImageCouleur extends TraitementImage {
             this.post_process_pixels[i]=getPixel(a, (r*r)/255, (g*g)/255, (b*b)/255);
         }
     }
+
+    /* 
+
+ * #############################################################
+ * #                       ECLAIRAGE                     #
+ * #############################################################
+ 
+*/
    
     public void eclairage(){
 
@@ -308,7 +315,20 @@ public class TraitementImageCouleur extends TraitementImage {
         }
 
     }
-   
+
+    /* 
+
+ * #############################################################
+ * #                       CONTRASTE                     #
+ * #############################################################
+ 
+*/
+    
+    /**
+     * methode qui recupere les composantes de chaque pixel, et applique 
+     * le complément sur chacune d'entre-elle
+     */
+
     public void contraste(){
 
         int a=0;

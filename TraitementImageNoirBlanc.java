@@ -73,6 +73,10 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     private int pixels_color [];           // stocke les pixels après lecture d'une image ARGB
 
+    private int [][] pixels_matrix;
+
+    private int [][] voisins_matrix;
+
     private byte post_process_pixels [];   // stocke le résultat après un traitement donné (forcément en niveau de gris dans cette classe)
 
     private int IMG_HEIGHT;                // hauteur
@@ -98,6 +102,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         ColorModel cm = ropimage.getColorModel();    
         this.IMG_WIDTH = ropimage.getWidth();
         this.IMG_HEIGHT  = ropimage.getHeight();
+        this.pixels_matrix=new int[this.IMG_HEIGHT][this.IMG_WIDTH];
+        this.voisins_matrix=new int[3][3];
         this.post_process_pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
       
         if ((bi.getType() == BufferedImage.TYPE_BYTE_GRAY) && (cm.getColorSpace().getType() == ColorSpace.TYPE_GRAY)) {
@@ -387,6 +393,101 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
             this.post_process_pixels[i] = (byte) pixel;
 
+        }
+    }
+
+    /* 
+
+ * #############################################################
+ * #                       CONVOLUTION                     #
+ * #############################################################
+ 
+*/
+
+    public void toAffiche(){
+
+    
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(this.voisins_matrix[i][j] + " ");
+            }
+            System.out.println("");
+        }
+    }
+
+    //int [][] conv = {{0,1,0},{0,0,0},{0,0,0}}; // translation vers le bas
+    //int [][] conv = {{0,-1,0},{-1,5,-1},{0,-1,0}}; // piqué
+    int [][] conv = {{1,0,-1},{0,0,0},{-1,0,1}};
+    //int [][] conv = {{0,0,0,0,0},{0,1,1,1,0},{0,1,1,1,0},{0,1,1,1,0}, {0,0,0,0,0}};
+
+    public void setPixelsInMatrice(){
+
+        int k = 0;
+        for (int i = 0; i < this.IMG_HEIGHT; i++) {
+            for (int j = 0; j < this.IMG_WIDTH; j++) {
+                this.pixels_matrix[i][j] = (int) (this.pixels[k] & 0xFF);
+                k++;
+            }
+        }
+    }
+
+    public int convOnePixel(){
+
+        int pixelConvoler=0;
+        for(int l=0;l<3;l++){
+            for (int c=0;c<3;c++){
+                pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c];
+                if(pixelConvoler>255 || pixelConvoler<0){
+                    System.out.println("ici");
+                    pixelConvoler = (pixelConvoler >> 0) & 0xFF;
+                }
+            }
+        }
+        //System.out.println(pixelConvoler);
+        return pixelConvoler;
+    }
+
+    // public int rien(){
+
+    // }
+
+    public void recupVoisins(int lp, int cp){
+
+        for (int l=0;l<3; l++){ //il faudra creer un attribut tailles matrices
+            for(int c=0;c<3; c++){
+                //System.out.println("TA MEREEEEE"+l);
+                try {
+                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-1][cp+c-1];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    this.voisins_matrix[l][c]=0;
+                }
+            }
+        }
+    }
+
+    public void traitementConvolution(){
+
+        setPixelsInMatrice();
+        // int t=1;
+        // for(int i=0;i<4;i++){
+        //     for(int j=0;j<4;j++){
+        //         this.pixels_matrix[i][j]=t;
+        //         t++;
+        //     }
+        //}
+        int k=0;
+        for (int l=0;l<this.IMG_HEIGHT; l++){
+            for(int c=0;c<this.IMG_WIDTH;c++){
+                recupVoisins(l, c);
+                // System.out.println("---------------------------");
+                // toAffiche();
+                //System.out.println("----------------------");
+                //System.out.print(convOnePixel()+" ");
+                
+                this.post_process_pixels[k]=(byte) convOnePixel();
+                k++;
+            }
+            //System.out.println("");
         }
     }
 

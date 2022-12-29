@@ -33,16 +33,39 @@ public class TestRecupImage {
          * si tu veux verifier tu peux le faire avec matlab
          */
 
-        imageToProcessColor.barPlotToFileCol(args[1]);
+        //imageToProcessColor.barPlotToFileCol(args[1]);
 
         /**
          * Utilisation : 
          * TestRecupImage <nom/de/image.png> <nom_fichier_destination.png (uniquement pour imageNB pour l'instant)>
          */
         imageToProcessColor.assombrissement();
-        imageToProcessColor.eclairage();
-        imageToProcessColor.contraste();
+        // imageToProcessColor.eclairage();
+        // imageToProcessColor.contraste();
         imageToProcessColor.saveImgColor(args[1]);
+
+
+        // ca me servira pour la covolution c'est le cast
+        // int [][] conv = {{-1,-1,-1},{-1,8,-1},{-1,-1,-1}};
+        // for(int l=0;l<3;l++){
+        //     for(int c=0;c<3;c++){
+        //         System.out.print(conv[l][c]+" ");
+        //     }
+        //     System.out.println("");
+        // }
+        // int x=258;
+        // int y=-345;
+        // System.out.println((int) (x >> 0) & 0xff);
+        // System.out.println((int) (y >> 0) & 0xff);
+
+        // imageToProcess.setPixelsInMatrice();
+        // imageToProcess.recupVoisins(0, 0);
+        // imageToProcess.toAffiche();
+        // System.out.println(imageToProcess.convOnePixel());
+
+        // imageToProcess.traitementConvolution();
+        // imageToProcess.saveImage(args[1]);
+
         
 
 

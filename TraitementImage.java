@@ -16,6 +16,8 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.PackedColorModel;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
 import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 
@@ -83,6 +85,26 @@ public abstract class TraitementImage {
         }
 
     }
+
+    public boolean createFile(String pathfile){
+
+        try {
+
+            File myObj = new File(pathfile);
+
+            if (myObj.createNewFile()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        } 
+        catch (IOException e) {
+            System.out.println("Erreur while creating file.");
+            return false;
+        }
+    }
+
 
     public String getPathFile(){
 

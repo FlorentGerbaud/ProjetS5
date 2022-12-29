@@ -34,8 +34,9 @@ transformation i.e suppresion des matrices pour les images NOIRBLANC)
 
 4. A PROPOS DE L'INTERFACE GRAPHIQUE :
 
-L'interface est désormais fonctionnel sauf pour l'histogramme ou je n'ai pas encore traité la sortie (créer le fichier)
-Sinon pour le reste ça devrait être bon tu peux tester florent pour voir (exécute le fichier MyWindows.java sans argument ni rien du tout)
+Interface GUI entièrement fonctionnelle pour la partie traitement image en noir et blanc.
+- Gestion des erreurs OK
+- peut-être inclure des gestions d'erreurs avec throws MAYBE ?
 
 
 

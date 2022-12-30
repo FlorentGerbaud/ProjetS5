@@ -39,10 +39,10 @@ public class TestRecupImage {
          * Utilisation : 
          * TestRecupImage <nom/de/image.png> <nom_fichier_destination.png (uniquement pour imageNB pour l'instant)>
          */
-        imageToProcessColor.assombrissement();
-        // imageToProcessColor.eclairage();
+        //imageToProcessColor.assombrissement();
+        //imageToProcessColor.eclairage();
         // imageToProcessColor.contraste();
-        imageToProcessColor.saveImgColor(args[1]);
+        //imageToProcessColor.saveImgColor(args[1]);
 
 
         // ca me servira pour la covolution c'est le cast
@@ -63,14 +63,12 @@ public class TestRecupImage {
         // imageToProcess.toAffiche();
         // System.out.println(imageToProcess.convOnePixel());
 
-        // imageToProcess.traitementConvolution();
-        // imageToProcess.saveImage(args[1]);
+        imageToProcess.traitementConvolution("F");
+        imageToProcess.saveImage(args[1]);
 
-        
+        //imageToProcess.getConv();
+        //imageToProcess.toAffiche();
 
-
-            
-    
     }
 }
 

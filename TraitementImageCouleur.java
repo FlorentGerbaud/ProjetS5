@@ -37,6 +37,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 
 /* 
 
@@ -47,6 +48,7 @@ import java.io.BufferedWriter;
 */
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /* 
 
@@ -86,6 +88,8 @@ public class TraitementImageCouleur extends TraitementImage {
 
     private int IMG_WIDTH;
 
+    private boolean iscolor = false;
+
     /**
      * 
      * @param file_path (String) / chemin vers le fichier à traiter.
@@ -111,13 +115,21 @@ public class TraitementImageCouleur extends TraitementImage {
         if (cm.getColorSpace().getType() == ColorSpace.TYPE_RGB) { // tout se passe bien
             this.pixels = bi.getRGB(0, 0, IMG_WIDTH, IMG_HEIGHT, null, 0, IMG_WIDTH);
             this.setPixelsInMatrice();
+            this.iscolor = true;
         }
         else{   // Erreur : l'image n'est pas en couleur
             this.pixels = null;
             this.IMG_HEIGHT = -1;
             this.IMG_WIDTH = -1;
+            this.iscolor = false;
         }
 
+    }
+
+
+    public boolean isColor(){
+
+        return this.iscolor; 
     }
 
 
@@ -227,12 +239,20 @@ public class TraitementImageCouleur extends TraitementImage {
     * 
     * @param destination fichier .txt de sortie
     */
-   public void barPlotToFileCol(String destination){
+   public void barPlotToFileCol(String destination) throws FileNotFoundException{
 
     Path destination_path = Paths.get(destination);
 
     HashMap<Integer,int []> sphm = statsHashMapCol(super.getNameFile());
 
+    boolean iscreated = super.createFile(destination); // file doesn't exist , so it's created
+
+    if(iscreated == false){                            // file already exist so clear file
+
+        PrintWriter writer = new PrintWriter(destination);
+        writer.print("");
+        writer.close();
+    }
 
     for (int occRGB = 0; occRGB < sphm.size(); occRGB++) {
         

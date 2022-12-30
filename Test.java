@@ -13,17 +13,10 @@ import java.io.IOException;  // Import the IOException class to handle errors
 
 public class Test {
   public static void main(String[] args) {
-    try {
-      File myObj = new File("./IMAGES/filename.txt");
-      if (myObj.createNewFile()) {
-        System.out.println("File created: " + myObj.getName());
-      } else {
-        System.out.println("File already exists.");
-      }
-    } catch (IOException e) {
-      System.out.println("An error occurred.");
-      e.printStackTrace();
-    }
+
+    TraitementImageCouleur color = new TraitementImageCouleur(args[0]);
+    color.assombrissement();
+    color.saveImgColor(args[1]);
   }
 }
 

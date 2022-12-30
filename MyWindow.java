@@ -19,7 +19,18 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
 
-public class MyWindow extends JFrame {
+
+/* 
+
+ * ###################################################################################################
+ * #                                          FENETRE PRINCIPALE                                     #
+ * ###################################################################################################
+ 
+*/
+
+
+
+public class MyWindow extends JFrame{
 
     private static final long serialVersionUID = -4939544011287453046L;
 
@@ -31,13 +42,20 @@ public class MyWindow extends JFrame {
    
     private JCheckBox chkMethod3 = new JCheckBox("Contraste");
 
+    private JCheckBox chkFromColorToGray = new JCheckBox("Color to Gray");
+
+
     private JButton btnConfirmLaunch = new JButton("Appuyer pour lancer");
 
     private JButton btnOpenFileChooser = new JButton("Appuyer pour choisir un fichier à traiter");
 
     private JButton btnOpenDirectoryChooser = new JButton("Appuyer pour choisir le dossier de sauvegarde");
 
+    private JButton btnOpenWindowForColor = new JButton("Appuyer ici pour les traitements couleurs");
+
+
     private JTextArea promptInfos = new JTextArea(" >>> Lancement de la fenêtre GUI \n",40,40);
+
 
     private String selectedPathFile = null; // contient le chemin absolue vers le fichier
 
@@ -75,6 +93,8 @@ public class MyWindow extends JFrame {
 
         contentPane.add(chkMethod3);
 
+        contentPane.add(chkFromColorToGray);
+
 
 
         contentPane.add(btnConfirmLaunch);
@@ -85,6 +105,9 @@ public class MyWindow extends JFrame {
 
         contentPane.add(btnOpenDirectoryChooser);
         btnOpenDirectoryChooser.addActionListener(new OpenDirectoryChooser());
+
+        contentPane.add(btnOpenWindowForColor);
+        btnOpenWindowForColor.addActionListener(new OpenProcessColor());
 
         this.promptInfos.setEditable(false); // impossible de modifier le prompt
         contentPane.add(promptInfos);
@@ -99,6 +122,8 @@ public class MyWindow extends JFrame {
 
 
     }
+
+
     
 
     
@@ -120,26 +145,6 @@ public class MyWindow extends JFrame {
         
     }
 
-
-/* 
-
- * #############################################################
- * #                        TOOLBAR                            #
- * #############################################################
- 
-*/
-
-    private JToolBar createToolBar(){
-
-        JToolBar toolBar = new JToolBar();
-
-        toolBar.add(this.btnConfirmLaunch);
-
-        toolBar.add(this.btnOpenFileChooser);
-
-        return toolBar;
-    }
-
 /* 
 
  * #############################################################
@@ -158,7 +163,7 @@ public class MyWindow extends JFrame {
         if(res == JFileChooser.APPROVE_OPTION){
             File directory = choose.getSelectedFile();
             this.selectedPathDirectory = directory.toString();
-            System.out.println(choose.getSelectedFile());
+            this.promptInfos.append(" >>> A Directory is actually selected"+"\n");
         }
         else{
 
@@ -184,6 +189,10 @@ public class MyWindow extends JFrame {
         if (res == JFileChooser.APPROVE_OPTION) {
             File file = choose.getSelectedFile();
             this.selectedPathFile = file.getAbsolutePath();
+            this.promptInfos.append(" >>> A File is actually selected"+"\n");
+            
+
+
         } 
         else{
             this.selectedPathFile = null;  //erreur aucun fichier sélectionner ou autre erreur
@@ -232,13 +241,20 @@ public class MyWindow extends JFrame {
         return this.name_file;
     }
 
+    public void closeMyWindow(){
+
+        this.dispose();
+
+    }
+
 /* 
 
  * #############################################################
- * #       CLASSES INTERNES ACTIONS DE TOUS LES LAYOUTS        #
+ * #                  ECOUTEURS D'EVENEMENTS                   #
  * #############################################################
  
 */
+
 
     private class OpenFileChooser implements ActionListener{
 
@@ -259,6 +275,20 @@ public class MyWindow extends JFrame {
         }
     }
 
+        
+    private class OpenProcessColor implements ActionListener{
+    
+    
+        @Override
+        public void actionPerformed(ActionEvent event){
+    
+            MyWindowForColor windows_color = new MyWindowForColor();
+            windows_color.setVisible(true);
+            MyWindow.this.closeMyWindow();
+
+        }
+    }
+
 
 
     private class ConfirmLaunch implements ActionListener{
@@ -274,63 +304,80 @@ public class MyWindow extends JFrame {
                 MyWindow.this.promptInfos.append(" >>> Please select a directory "+"\n");
             }
             else{
-            
+
                 // si aucun fichier sélectionner on arrête tout
                 if(MyWindow.this.selectedPathFile == null){
                     MyWindow.this.promptInfos.append(" >>> No file selected "+"\n");
                     MyWindow.this.promptInfos.append(" >>> Please select a file"+"\n");
                 }
                 else{
-                
+
                     if(isImgPng() == true){ //on peut exécuter les méthodes de traitements
 
                         //création de l'objet image
                         TraitementImageNoirBlanc obj = new TraitementImageNoirBlanc(MyWindow.this.selectedPathFile);
 
+                        if(obj.isColor() == false){ // l'image est en noir et blanc
 
-                        MyWindow.this.promptInfos.append(" >>> Correct File : "+MyWindow.this.getName_File()+"\n");
-                        MyWindow.this.promptInfos.append(" >>> BEGIN OF PROCESS "+"\n");
+                            MyWindow.this.promptInfos.append(" >>> Select Image is Gray -> All Processes are supported except ColoToGray"+"\n");
+                            MyWindow.this.promptInfos.append(" >>> Correct File : "+MyWindow.this.getName_File()+"\n");
+                            MyWindow.this.promptInfos.append(" >>> BEGIN OF PROCESS "+"\n");
 
-                        if(MyWindow.this.chkHisto.isSelected()){
+                            if(MyWindow.this.chkHisto.isSelected()){
 
-                            try{
-                                obj.barPlotToFile(selectedPathDirectory+"/histogramme.txt");
-                                MyWindow.this.promptInfos.append(" >>> Process Histogramme was successful"+"\n");
+                                try{
+                                    obj.barPlotToFile(selectedPathDirectory+"/histogramme.txt");
+                                    MyWindow.this.promptInfos.append(" >>> Process Histogramme was successful"+"\n");
+                                }
+                                catch(FileNotFoundException e){
+                                    System.out.println("Error while creating file in histogramme");
+                                }
+                                done = true;
+
                             }
-                            catch(FileNotFoundException e){
-                                System.out.println("Error while creating file in histogramme");
+
+                            if(MyWindow.this.chkMethod1.isSelected()){
+
+                                obj.eclairage();
+                                obj.saveImage(MyWindow.this.selectedPathDirectory+"/eclairage_"+MyWindow.this.name_file);
+
+                                MyWindow.this.promptInfos.append(" >>> Process Eclairage was successful"+"\n");
+                                done = true;
                             }
-                            done = true;
 
+                            if(MyWindow.this.chkMethod2.isSelected()){
+
+                                obj.assombrissement();
+                                obj.saveImage(MyWindow.this.selectedPathDirectory+"/assombrissement_"+MyWindow.this.name_file);
+
+                                MyWindow.this.promptInfos.append(" >>> Process Assombrissement was successful"+"\n");
+
+                                
+                            }
+
+                            if(MyWindow.this.chkMethod3.isSelected()){
+
+                                obj.contraste();
+                                obj.saveImage(MyWindow.this.selectedPathDirectory+"/contraste_"+MyWindow.this.name_file);
+
+                                MyWindow.this.promptInfos.append(" >>> Process ColorToGray was successful"+"\n");
+                                done = true;
+                                
+                            }
                         }
+                        else{ // l'image est en couleur donc 1 seul traitement dispo
 
-                        if(MyWindow.this.chkMethod1.isSelected()){
+                            if(MyWindow.this.chkFromColorToGray.isSelected()){
 
-                            obj.eclairage();
-                            obj.saveImage(MyWindow.this.selectedPathDirectory+"/eclairage_"+MyWindow.this.name_file);
+                                MyWindow.this.promptInfos.append(" >>> Select Image is in Color -> Only ColorToGray is supported "+"\n");
 
-                            MyWindow.this.promptInfos.append(" >>> Process Eclairage was successful"+"\n");
-                            done = true;
-                        }
 
-                        if(MyWindow.this.chkMethod2.isSelected()){
+                                obj.fromColorToGray();
+                                obj.saveImage(MyWindow.this.selectedPathDirectory+"/noir&blanc_"+MyWindow.this.name_file);
 
-                            obj.assombrissement();
-                            obj.saveImage(MyWindow.this.selectedPathDirectory+"/assombrissement_"+MyWindow.this.name_file);
-
-                            MyWindow.this.promptInfos.append(" >>> Process Assombrissement was successful"+"\n");
-
-                            
-                        }
-
-                        if(MyWindow.this.chkMethod3.isSelected()){
-
-                            obj.contraste();
-                            obj.saveImage(MyWindow.this.selectedPathDirectory+"/contraste_"+MyWindow.this.name_file);
-
-                            MyWindow.this.promptInfos.append(" >>> Process Contraste was successful"+"\n");
-                            done = true;
-                            
+                                MyWindow.this.promptInfos.append(" >>> Process Contraste was successful"+"\n");
+                                done = true;
+                            }
                         }
                     }
                     else{ // on ne peut rien faire avec l'image, on redonne la main
@@ -347,4 +394,11 @@ public class MyWindow extends JFrame {
             }
         }
     }
-}
+
+
+} //FIN DE CLASSE PRINCIPALE
+
+
+
+
+

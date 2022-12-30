@@ -85,6 +85,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     private int IMG_WIDTH;                 // largeur
 
+    private boolean iscolor;
+
 /* 
 
  * #############################################################
@@ -113,12 +115,14 @@ public class TraitementImageNoirBlanc extends TraitementImage{
             DataBufferByte db = (DataBufferByte) (r.getDataBuffer());   // then the real array of bytes
             this.pixels = db.getData();
             this.pixels_color= null;
+            this.iscolor = false;
             
             
         }
         else{  //l'image est en couleur           
             this.pixels_color = bi.getRGB(0, 0, IMG_WIDTH, IMG_HEIGHT, null, 0, IMG_WIDTH);
             this.pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
+            this.iscolor = true;
         }
     }
 /* 
@@ -141,6 +145,11 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     public byte [] getTabPixels(){
         return this.pixels;
 
+    }
+
+    public boolean isColor(){
+
+        return this.iscolor;
     }
 
 
@@ -448,7 +457,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
             for (int c=0;c<3;c++){
                 pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c];
                 if(pixelConvoler>255 || pixelConvoler<0){
-                    System.out.println("ici");
+                    //System.out.println("ici");
                     pixelConvoler = (pixelConvoler >> 0) & 0xFF;
                 }
             }

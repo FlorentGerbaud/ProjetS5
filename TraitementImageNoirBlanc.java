@@ -58,6 +58,9 @@ import java.io.PrintWriter;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.io.BufferedReader;  
+import java.io.FileReader;  
+import java.io.IOException;  
 
 
 /* 
@@ -76,6 +79,10 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     private int pixels_color [];           // stocke les pixels après lecture d'une image ARGB
 
     private int [][] pixels_matrix;
+
+    private int conv[][];
+
+    private int dimConv;
 
     private int [][] voisins_matrix;
 
@@ -423,12 +430,42 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  
 */
 
+    public void getConv(String file){
+
+        int l=0;
+        String line = "";  
+        String splitBy = ";";  
+        try{  
+            BufferedReader br = new BufferedReader(new FileReader(file)); 
+            line = br.readLine(); 
+            String[] ligneConv = line.split(splitBy);
+            this.dimConv=ligneConv.length;
+            this.conv=new int[this.dimConv][this.dimConv];
+            for(int c=0;c<this.dimConv; c++){
+                //System.out.println(ligneConv[c]);
+                this.conv[l][c]=Integer.parseInt(ligneConv[c]);
+            }
+            l++;
+            while ((line = br.readLine()) != null) {  
+                ligneConv = line.split(splitBy);
+                for(int c=0;c<this.dimConv; c++){
+                    this.conv[l][c]=Integer.parseInt(ligneConv[c]);
+                }
+                l++;
+            }  
+        }   
+        catch (IOException e){  
+            e.printStackTrace();  
+        }  
+    } 
+
+
     public void toAffiche(){
 
     
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                System.out.print(this.voisins_matrix[i][j] + " ");
+                System.out.print(this.conv[i][j] + " ");
             }
             System.out.println("");
         }
@@ -436,8 +473,28 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     //int [][] conv = {{0,1,0},{0,0,0},{0,0,0}}; // translation vers le bas
     //int [][] conv = {{0,-1,0},{-1,5,-1},{0,-1,0}}; // piqué
-    int [][] conv = {{1,0,-1},{0,0,0},{-1,0,1}};
+    //int [][] conv = {{1,0,-1},{0,0,0},{-1,0,1}};
     //int [][] conv = {{0,0,0,0,0},{0,1,1,1,0},{0,1,1,1,0},{0,1,1,1,0}, {0,0,0,0,0}};
+
+    public void choixConv(String choix){
+        switch (choix) {
+            case "TB":
+                getConv("MatricesConv/TranslationBas.csv");
+                break;
+            case "F" :
+                getConv(("MatricesConv/Flou.csv"));
+                break;
+            case "C" :
+                getConv("MatricesConv/Contour.csv");
+                break;
+            case "N" :
+                getConv("MatricesConv/Pique.csv");
+                break;
+            default:
+                System.err.println("le traitement choisis n'éxiste pas");
+                break;
+        }
+    }
 
     public void setPixelsInMatrice(){
 
@@ -466,15 +523,10 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         return pixelConvoler;
     }
 
-    // public int rien(){
-
-    // }
-
     public void recupVoisins(int lp, int cp){
 
         for (int l=0;l<3; l++){ //il faudra creer un attribut tailles matrices
             for(int c=0;c<3; c++){
-                //System.out.println("TA MEREEEEE"+l);
                 try {
                     this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-1][cp+c-1];
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -484,29 +536,17 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
-    public void traitementConvolution(){
+    public void traitementConvolution(String Traitement){
 
+        choixConv(Traitement);
         setPixelsInMatrice();
-        // int t=1;
-        // for(int i=0;i<4;i++){
-        //     for(int j=0;j<4;j++){
-        //         this.pixels_matrix[i][j]=t;
-        //         t++;
-        //     }
-        //}
         int k=0;
         for (int l=0;l<this.IMG_HEIGHT; l++){
             for(int c=0;c<this.IMG_WIDTH;c++){
                 recupVoisins(l, c);
-                // System.out.println("---------------------------");
-                // toAffiche();
-                //System.out.println("----------------------");
-                //System.out.print(convOnePixel()+" ");
-                
                 this.post_process_pixels[k]=(byte) convOnePixel();
                 k++;
             }
-            //System.out.println("");
         }
     }
 
@@ -519,20 +559,9 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     public void saveImage(String dest_file){
 
-        // Start by defining the type of image we want to save
-        // let's create a model of type TYPE_BYTE, to store an image of
-        // IMG_WIDTH et IMG_HEIGHT dimensions. Last argument is the number of bands
-        // for grayscale = 1 band (no surprises! gray-scale needs only one channel)
         SampleModel sm = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE,IMG_WIDTH,IMG_HEIGHT,1);
-        // The same way we got the image data in a BufferedImage when opening a file
-        // we now need to create a BufferedImage where to put the image data
-        // The BufferedImage object will be an image of IMG_WIDTH and IMG_HEIGHT
-        // dimension. It's also a TYPE_BYTE_GRAY image
         BufferedImage image = new BufferedImage(this.IMG_WIDTH, this.IMG_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
-        // let's put the data from b (declared as "byte[] b;")
         image.setData(Raster.createRaster(sm, new DataBufferByte(this.post_process_pixels, this.post_process_pixels.length), new Point()));
-        // and save it in a file!
-        // here, the image will be called "res-gs.png"
         JAI.create("filestore",image,dest_file,"PNG");
 
     }

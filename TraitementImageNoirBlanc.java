@@ -112,7 +112,6 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         this.IMG_WIDTH = ropimage.getWidth();
         this.IMG_HEIGHT  = ropimage.getHeight();
         this.pixels_matrix=new int[this.IMG_HEIGHT][this.IMG_WIDTH];
-        this.voisins_matrix=new int[3][3];
         this.post_process_pixels = new byte[this.IMG_HEIGHT*this.IMG_WIDTH];
       
         if ((bi.getType() == BufferedImage.TYPE_BYTE_GRAY) && (cm.getColorSpace().getType() == ColorSpace.TYPE_GRAY)) {
@@ -421,23 +420,29 @@ public class TraitementImageNoirBlanc extends TraitementImage{
  
 */
 
+    /**
+     * Methode qui vas se charger de recupérer une latrice de convolution dans un fichier .csv
+     * @param file (String) nom du fichier csv
+     */
+
     public void getConv(String file){
 
-        int l=0;
+        int l=0; //on initialise l'indice des ligne
         String line = "";  
-        String splitBy = ";";  
+        String splitBy = ";";  //on initialise le separateur
+
         try{  
             BufferedReader br = new BufferedReader(new FileReader(file)); 
-            line = br.readLine(); 
-            String[] ligneConv = line.split(splitBy);
-            this.dimConv=ligneConv.length;
-            this.conv=new int[this.dimConv][this.dimConv];
-            for(int c=0;c<this.dimConv; c++){
-                //System.out.println(ligneConv[c]);
+            line = br.readLine(); //lecture un premier coup en dehors de la boucle
+            String[] ligneConv = line.split(splitBy); 
+            this.dimConv=ligneConv.length; //qui nous permet d'obtenir la dimensions de la matrice de convolution
+            this.conv=new int[this.dimConv][this.dimConv]; // que l'on peut donc initialiser
+
+            for(int c=0;c<this.dimConv; c++){ //maintenant qu'on connais la taille, on recupere la premiere ligne
                 this.conv[l][c]=Integer.parseInt(ligneConv[c]);
             }
-            l++;
-            while ((line = br.readLine()) != null) {  
+            l++; //on passe à la ligne suivante
+            while ((line = br.readLine()) != null) {  //puis on re applique n fois le procédé pour recuperer les autres lignes
                 ligneConv = line.split(splitBy);
                 for(int c=0;c<this.dimConv; c++){
                     this.conv[l][c]=Integer.parseInt(ligneConv[c]);
@@ -462,10 +467,10 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
-    //int [][] conv = {{0,1,0},{0,0,0},{0,0,0}}; // translation vers le bas
-    //int [][] conv = {{0,-1,0},{-1,5,-1},{0,-1,0}}; // piqué
-    //int [][] conv = {{1,0,-1},{0,0,0},{-1,0,1}};
-    //int [][] conv = {{0,0,0,0,0},{0,1,1,1,0},{0,1,1,1,0},{0,1,1,1,0}, {0,0,0,0,0}};
+    /**
+     * permet à l'utilisateur de choisir le traitement qu'il veut faire
+     * @param choix
+     */
 
     public void choixConv(String choix){
         switch (choix) {
@@ -487,6 +492,9 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
+    /**
+     * transforme e tavleau de byte en matrice de int
+     */
     public void setPixelsInMatrice(){
 
         int k = 0;
@@ -498,27 +506,39 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
+    public int calculPas(int seuil){
+
+        int pas=1;
+        int cpt=3;
+
+        while (cpt<seuil){
+            pas++;
+            cpt=cpt+2;
+        }
+        return pas;
+    }
+
     public int convOnePixel(){
 
         int pixelConvoler=0;
-        for(int l=0;l<3;l++){
-            for (int c=0;c<3;c++){
+        for(int l=0;l<this.dimConv;l++){
+            for (int c=0;c<this.dimConv;c++){
                 pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c];
                 if(pixelConvoler>255 || pixelConvoler<0){
                     pixelConvoler = (pixelConvoler >> 0) & 0xFF;
                 }
             }
         }
-        //System.out.println(pixelConvoler);
         return pixelConvoler;
     }
 
     public void recupVoisins(int lp, int cp){
 
-        for (int l=0;l<3; l++){ //il faudra creer un attribut tailles matrices
-            for(int c=0;c<3; c++){
+        this.voisins_matrix=new int[this.dimConv][this.dimConv];
+        for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
+            for(int c=0;c<this.dimConv; c++){
                 try {
-                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-1][cp+c-1];
+                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-(this.dimConv-calculPas(dimConv))][cp+c-(this.dimConv-calculPas(dimConv))];
                 } catch (ArrayIndexOutOfBoundsException e) {
                     this.voisins_matrix[l][c]=0;
                 }

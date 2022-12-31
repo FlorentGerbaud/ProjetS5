@@ -22,6 +22,8 @@ import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 import java.awt.image.SampleModel;
 import java.awt.image.DirectColorModel;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 /* 
 
@@ -81,6 +83,26 @@ public class TraitementImageCouleur extends TraitementImage {
     private int [][] pixels_matrix;
 
     private int [] post_process_pixels;
+
+    private int conv[][];
+
+    private int dimConv;
+
+    private int [][] voisins_matrixR;
+
+    private int [][] voisins_matrixG;
+
+    private int [][] voisins_matrixB;
+
+    private int [][] voisins_matrixA;
+
+    private int pixelConvolerA;
+
+    private int pixelConvolerR;
+
+    private int pixelConvolerG;
+
+    private int pixelConvolerB;
 
     private int IMG_HEIGHT;
 
@@ -150,9 +172,9 @@ public class TraitementImageCouleur extends TraitementImage {
     public void toAffiche(){
 
   
-        for (int i = 0; i < this.IMG_HEIGHT; i++) {
-            for (int j = 0; j < this.IMG_WIDTH; j++) {
-                System.out.print(this.pixels_matrix[i][j]);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(this.voisins_matrixB[i][j]+" ");
             }
             System.out.println();
         }
@@ -346,6 +368,149 @@ public class TraitementImageCouleur extends TraitementImage {
         }
     }
 
+
+       /* 
+
+ * #############################################################
+ * #                       CONVOLUTION                     #
+ * #############################################################
+ 
+*/
+
+    /**
+     * Methode qui vas se charger de recupérer une latrice de convolution dans un fichier .csv
+     * @param file (String) nom du fichier csv
+     */
+
+     public void getConv(String file){
+
+        int l=0; //on initialise l'indice des ligne
+        String line = "";  
+        String splitBy = ";";  //on initialise le separateur
+
+        try{  
+            BufferedReader br = new BufferedReader(new FileReader(file)); 
+            line = br.readLine(); //lecture un premier coup en dehors de la boucle
+            String[] ligneConv = line.split(splitBy); 
+            this.dimConv=ligneConv.length; //qui nous permet d'obtenir la dimensions de la matrice de convolution
+            this.conv=new int[this.dimConv][this.dimConv]; // que l'on peut donc initialiser
+
+            for(int c=0;c<this.dimConv; c++){ //maintenant qu'on connais la taille, on recupere la premiere ligne
+                this.conv[l][c]=Integer.parseInt(ligneConv[c]);
+            }
+            l++; //on passe à la ligne suivante
+            while ((line = br.readLine()) != null) {  //puis on re applique n fois le procédé pour recuperer les autres lignes
+                ligneConv = line.split(splitBy);
+                for(int c=0;c<this.dimConv; c++){
+                    this.conv[l][c]=Integer.parseInt(ligneConv[c]);
+                }
+                l++;
+            }  
+        }   
+        catch (IOException e){  
+            e.printStackTrace();  
+        }  
+    } 
+
+
+    /**
+     * permet à l'utilisateur de choisir le traitement qu'il veut faire
+     * @param choix
+     */
+
+    public void choixConv(String choix){
+        switch (choix) {
+            case "TB":
+                getConv("MatricesConv/TranslationBas.csv");
+                break;
+            case "F" :
+                getConv(("MatricesConv/Flou.csv"));
+                break;
+            case "C" :
+                getConv("MatricesConv/Contour.csv");
+                break;
+            case "N" :
+                getConv("MatricesConv/Pique.csv");
+                break;
+            default:
+                System.err.println("le traitement choisis n'éxiste pas");
+                break;
+        }
+    }
+
+    /**
+     * transforme e tavleau de byte en matrice de int
+     */
+    
+
+    public void convOnePixel(){
+
+        for(int l=0;l<this.dimConv;l++){
+            for (int c=0;c<this.dimConv;c++){
+                this.pixelConvolerR=this.pixelConvolerR+this.voisins_matrixR[l][c]*this.conv[l][c];
+                this.pixelConvolerG=this.pixelConvolerG+this.voisins_matrixG[l][c]*this.conv[l][c];
+                this.pixelConvolerB=this.pixelConvolerB+this.voisins_matrixB[l][c]*this.conv[l][c];
+                this.pixelConvolerA=this.pixelConvolerA+this.voisins_matrixA[l][c]*this.conv[l][c];
+
+                if(pixelConvolerR>255 || pixelConvolerR<0){
+                    this.pixelConvolerR = (this.pixelConvolerR >> 0) & 0xFF;
+                }
+                if(pixelConvolerG>255 || pixelConvolerG<0){
+                    this.pixelConvolerG = (this.pixelConvolerG >> 0) & 0xFF;
+                }
+                if(pixelConvolerB>255 || pixelConvolerB<0){
+                    this.pixelConvolerB = (this.pixelConvolerB >> 0) & 0xFF;
+                }
+                if(pixelConvolerA>255 || pixelConvolerA<0){
+                    this.pixelConvolerA = (this.pixelConvolerA >> 0) & 0xFF;
+                }
+            }
+        }
+        //System.out.println(this.pixelConvolerA+", "+this.pixelConvolerR+", "+this.pixelConvolerG+", "+this.pixelConvolerB);
+    }
+
+    public void recupVoisins(int lp, int cp){
+
+        this.voisins_matrixR=new int[this.dimConv][this.dimConv];
+        this.voisins_matrixG=new int[this.dimConv][this.dimConv];
+        this.voisins_matrixB=new int[this.dimConv][this.dimConv];
+        this.voisins_matrixA=new int[this.dimConv][this.dimConv];
+
+        for (int l=0;l<this.dimConv; l++){ 
+            for(int c=0;c<this.dimConv; c++){
+                try {
+                    this.voisins_matrixR[l][c]=getR(this.pixels_matrix[lp+l-1][cp+c-1]);
+                    this.voisins_matrixG[l][c]=getG(this.pixels_matrix[lp+l-1][cp+c-1]);
+                    this.voisins_matrixB[l][c]=getB(this.pixels_matrix[lp+l-1][cp+c-1]);
+                    this.voisins_matrixA[l][c]=getA(this.pixels_matrix[lp+l-1][cp+c-1]);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    //System.out.println("ici");
+                    this.voisins_matrixR[l][c]=0;
+                    this.voisins_matrixG[l][c]=0;
+                    this.voisins_matrixB[l][c]=0;
+                    this.voisins_matrixA[l][c]=0;
+                }
+            }
+        }
+    }
+
+    public void traitementConvolution(String Traitement){
+
+        choixConv(Traitement);
+        //setPixelsInMatrice();
+        int k=0;
+        for (int l=0;l<this.IMG_HEIGHT; l++){
+            for(int c=0;c<this.IMG_WIDTH;c++){
+                recupVoisins(l, c);
+                convOnePixel();
+                this.post_process_pixels[k]=getPixel(getA(this.pixels_matrix[l][c]), this.pixelConvolerR, this.pixelConvolerG, this.pixelConvolerB);
+                //System.out.println(this.post_process_pixels[k]);
+                k++;
+            }
+        }
+    }
+
+
     /* 
 
  * ##########################################################################################
@@ -364,6 +529,7 @@ public class TraitementImageCouleur extends TraitementImage {
     BufferedImage image = new BufferedImage(colorModel, raster, colorModel.isAlphaPremultiplied(), null);
     RenderedOp op1 = JAI.create("filestore", image, nameOut, "png");
     }
+    
 
     /* 
 

@@ -351,6 +351,7 @@ public class MyWindow extends JFrame{
                                 obj.saveImage(MyWindow.this.selectedPathDirectory+"/assombrissement_"+MyWindow.this.name_file);
 
                                 MyWindow.this.promptInfos.append(" >>> Process Assombrissement was successful"+"\n");
+                                done = true;
 
                                 
                             }

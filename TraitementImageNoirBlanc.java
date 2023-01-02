@@ -78,13 +78,13 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     private int pixels_color [];           // stocke les pixels après lecture d'une image ARGB
 
-    private int [][] pixels_matrix;
+    private int [][] pixels_matrix;        // image stockée sous forme de matrice
 
-    private int conv[][];
+    private int conv[][];                  // résultat de la convolution
 
-    private int dimConv;
+    private int dimConv;                   // dimension de la matrice de convolution
 
-    private int [][] voisins_matrix;
+    private int [][] voisins_matrix;       // voisins d'un pixel
 
     private byte post_process_pixels [];   // stocke le résultat après un traitement donné (forcément en niveau de gris dans cette classe)
 
@@ -92,7 +92,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     private int IMG_WIDTH;                 // largeur
 
-    private boolean iscolor;
+    private boolean iscolor;               // image couleur ou non
 
 /* 
 

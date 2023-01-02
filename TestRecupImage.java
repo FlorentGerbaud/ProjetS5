@@ -64,19 +64,21 @@ public class TestRecupImage {
         // System.out.println(imageToProcess.convOnePixel());
 
         //--------- Convolution NB
-        //imageToProcess.traitementConvolution("C");
-        //imageToProcess.saveImage(args[1]);
+        // imageToProcess.traitementConvolution("C");
+        // imageToProcess.saveImage(args[1]);
         //---------------------------------
 
+        //--------- Convolution Couleur
         imageToProcessColor.traitementConvolution("C");
         imageToProcessColor.saveImgColor(args[1]);
+        //---------------------------------
 
-        //imageToProcessColor.setPixelsInMatrice();
-        imageToProcessColor.recupVoisins(0, 0);
-        imageToProcessColor.convOnePixel();
-        System.out.println(imageToProcessColor.getPixel(0, 1, 1, 255));
-        imageToProcessColor.toAffiche();
-        System.out.println(imageToProcess.convOnePixel());
+        // //imageToProcessColor.setPixelsInMatrice();
+        // imageToProcessColor.recupVoisins(0, 0);
+        // imageToProcessColor.convOnePixel();
+        // System.out.println(imageToProcessColor.getPixel(0, 1, 1, 255));
+        // imageToProcessColor.toAffiche();
+        // System.out.println(imageToProcess.convOnePixel());
 
 
             

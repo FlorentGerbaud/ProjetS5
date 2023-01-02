@@ -96,9 +96,9 @@ public class TraitementImageCouleur extends TraitementImage {
 
     private int [][] voisins_matrixB;
 
-    private int [][] voisins_matrixA;
+    // private int [][] voisins_matrixA;
 
-    private int pixelConvolerA;
+    // private int pixelConvolerA;
 
     private int pixelConvolerR;
 
@@ -465,28 +465,42 @@ public class TraitementImageCouleur extends TraitementImage {
 
     public void convOnePixel(){
 
+        this.pixelConvolerR=0;
+        this.pixelConvolerG=0;
+        this.pixelConvolerB=0;
         for(int l=0;l<this.dimConv;l++){
             for (int c=0;c<this.dimConv;c++){
                 this.pixelConvolerR=this.pixelConvolerR+this.voisins_matrixR[l][c]*this.conv[l][c];
-                this.pixelConvolerG=this.pixelConvolerG+this.voisins_matrixG[l][c]*this.conv[l][c];
-                this.pixelConvolerB=this.pixelConvolerB+this.voisins_matrixB[l][c]*this.conv[l][c];
-                this.pixelConvolerA=this.pixelConvolerA+this.voisins_matrixA[l][c]*this.conv[l][c];
-
                 if(pixelConvolerR>255 || pixelConvolerR<0){
                     this.pixelConvolerR = (this.pixelConvolerR >> 0) & 0xFF;
                 }
+                this.pixelConvolerG=this.pixelConvolerG+this.voisins_matrixG[l][c]*this.conv[l][c];
                 if(pixelConvolerG>255 || pixelConvolerG<0){
                     this.pixelConvolerG = (this.pixelConvolerG >> 0) & 0xFF;
                 }
+                this.pixelConvolerB=this.pixelConvolerB+this.voisins_matrixB[l][c]*this.conv[l][c];
                 if(pixelConvolerB>255 || pixelConvolerB<0){
                     this.pixelConvolerB = (this.pixelConvolerB >> 0) & 0xFF;
                 }
-                if(pixelConvolerA>255 || pixelConvolerA<0){
-                    this.pixelConvolerA = (this.pixelConvolerA >> 0) & 0xFF;
-                }
+                //this.pixelConvolerA=this.pixelConvolerA+this.voisins_matrixA[l][c]*this.conv[l][c];
+                // if(pixelConvolerA>255 || pixelConvolerA<0){
+                //     this.pixelConvolerA = (this.pixelConvolerA >> 0) & 0xFF;
+                // }
             }
         }
         //System.out.println(this.pixelConvolerA+", "+this.pixelConvolerR+", "+this.pixelConvolerG+", "+this.pixelConvolerB);
+    }
+
+    public int calculPas(int seuil){
+
+        int pas=1;
+        int cpt=3;
+
+        while (cpt<seuil){
+            pas++;
+            cpt=cpt+2;
+        }
+        return pas;
     }
 
     public void recupVoisins(int lp, int cp){
@@ -494,21 +508,21 @@ public class TraitementImageCouleur extends TraitementImage {
         this.voisins_matrixR=new int[this.dimConv][this.dimConv];
         this.voisins_matrixG=new int[this.dimConv][this.dimConv];
         this.voisins_matrixB=new int[this.dimConv][this.dimConv];
-        this.voisins_matrixA=new int[this.dimConv][this.dimConv];
+        // this.voisins_matrixA=new int[this.dimConv][this.dimConv];
 
         for (int l=0;l<this.dimConv; l++){ 
             for(int c=0;c<this.dimConv; c++){
                 try {
-                    this.voisins_matrixR[l][c]=getR(this.pixels_matrix[lp+l-1][cp+c-1]);
-                    this.voisins_matrixG[l][c]=getG(this.pixels_matrix[lp+l-1][cp+c-1]);
-                    this.voisins_matrixB[l][c]=getB(this.pixels_matrix[lp+l-1][cp+c-1]);
-                    this.voisins_matrixA[l][c]=getA(this.pixels_matrix[lp+l-1][cp+c-1]);
+                    this.voisins_matrixR[l][c]=getR(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
+                    this.voisins_matrixG[l][c]=getG(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
+                    this.voisins_matrixB[l][c]=getB(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
+                    // this.voisins_matrixA[l][c]=getA(this.pixels_matrix[lp+l-1][cp+c-1]);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     //System.out.println("ici");
                     this.voisins_matrixR[l][c]=0;
                     this.voisins_matrixG[l][c]=0;
                     this.voisins_matrixB[l][c]=0;
-                    this.voisins_matrixA[l][c]=0;
+                    // this.voisins_matrixA[l][c]=0;
                 }
             }
         }

@@ -542,13 +542,71 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         return pixelConvoler;
     }
 
+    public void recupVoisins2(int nIemePixel){
+
+        int blocInMatrix=1;
+        int positionInBloc=0;
+        int realPosition=0;
+        int sortie=0;
+        for(int l=0;l<nIemePixel;l++){
+            realPosition++;
+            if(positionInBloc>2){
+                positionInBloc=0;
+                blocInMatrix++;
+            }
+            positionInBloc++;
+        }
+
+        for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
+            for(int c=0;c<this.dimConv; c++){
+                try {
+                    if(l==0){ // ligne du haut
+                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-4+c] & 0xFF);
+                        sortie=(positionInBloc-3)%3;
+                        if(sortie-1 < 0 || sortie+1>2){
+                            this.voisins_matrix[l][c]=0;
+                        }
+                    }
+                    if(l==1){ // ligne du milieu
+                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-1+c] & 0xFF);
+                        sortie=positionInBloc;
+                        if(sortie-1 < 0 || sortie+1>2){
+                            this.voisins_matrix[l][c]=0;
+                        }
+                    }
+                    if(l==2){ // ligne du bas
+                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition+2+c] & 0xFF);
+                        sortie=(positionInBloc+3)%3;
+                        if(sortie-1 < 0 || sortie+1>2){
+                            this.voisins_matrix[l][c]=0;
+                        }
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    this.voisins_matrix[l][c]=0;
+                }
+            }
+        }
+    }
+
+    public void traitementConvolution2(String Traitement){
+
+        choixConv(Traitement);
+        int k=0;
+        for (int l=0;l<this.IMG_HEIGHT*this.IMG_WIDTH; l++){
+
+                recupVoisins2(l);
+                this.post_process_pixels[k]=(byte) convOnePixel();
+                k++;
+            }
+        }
+
     public void recupVoisins(int lp, int cp){
 
         this.voisins_matrix=new int[this.dimConv][this.dimConv];
         for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
             for(int c=0;c<this.dimConv; c++){
                 try {
-                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-(this.dimConv-calculPas(dimConv))][cp+c-(this.dimConv-calculPas(dimConv))];
+                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)];
                 } catch (ArrayIndexOutOfBoundsException e) {
                     this.voisins_matrix[l][c]=0;
                 }

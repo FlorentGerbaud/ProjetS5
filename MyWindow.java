@@ -30,7 +30,7 @@ import javax.swing.filechooser.FileSystemView;
 
 
 
-public class MyWindow extends JFrame{
+public class MyWindow extends MainWindow{
 
     private static final long serialVersionUID = -4939544011287453046L;
 
@@ -51,8 +51,6 @@ public class MyWindow extends JFrame{
 
     private JButton btnOpenDirectoryChooser = new JButton("Appuyer pour choisir le dossier de sauvegarde");
 
-    private JButton btnOpenWindowForColor = new JButton("Appuyer ici pour les traitements couleurs");
-
 
     private JTextArea promptInfos = new JTextArea(" >>> Lancement de la fenêtre GUI \n",40,40);
 
@@ -64,6 +62,8 @@ public class MyWindow extends JFrame{
     private String selectedPathDirectory = null;
 
 
+
+
 /* 
 
  * #############################################################
@@ -73,8 +73,14 @@ public class MyWindow extends JFrame{
 */
 
     public MyWindow() {
+    
 
-        super( "Traitement Image Noir & Blanc");             // titre de la fenêtre
+        super(false);
+
+        
+
+
+        this.setTitle("Filtre Image Niveau Gris");// titre de la fenêtre
         this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );  // paramètre la fenêtre pour que quand celle-ci se ferme, le programme s'arrête
         this.setSize( 800, 800 ); // taille par défaut de la fenêtre
         this.setLocationRelativeTo( null ); // centre la fenêtre par rapport à la résolution de l'écran
@@ -82,8 +88,6 @@ public class MyWindow extends JFrame{
         JPanel contentPane = (JPanel) this.getContentPane(); //zone de la windows privée de la barre de menu
 
         contentPane.setLayout( new FlowLayout()); // met les éléments de la fenêtre côte à côte et les ajuste en fonction de ce qu'il contient
-        // si le setLayout est à null alors c'est au programmeur de placer les layouts lui même.
-        //FlowLayout.CENTER,20,20
 
         contentPane.add(chkHisto);
         
@@ -106,9 +110,6 @@ public class MyWindow extends JFrame{
         contentPane.add(btnOpenDirectoryChooser);
         btnOpenDirectoryChooser.addActionListener(new OpenDirectoryChooser());
 
-        contentPane.add(btnOpenWindowForColor);
-        btnOpenWindowForColor.addActionListener(new OpenProcessColor());
-
         this.promptInfos.setEditable(false); // impossible de modifier le prompt
         contentPane.add(promptInfos);
         //barre de scroll pour la texte field (indiquant les entrées sorties du programme)
@@ -116,182 +117,115 @@ public class MyWindow extends JFrame{
         contentPane.add(scroll);
 
 
-
-
         this.setVisible( true ); // affichage de la fenêtre
-
-
-    }
-
-
-    
-
-    
-/* 
-
- * #############################################################
- * #             MAIN LANCEMENT DE LA FENETRE                 #
- * #############################################################
- 
-*/
-
-    public static void main(String[] args) throws Exception {
-   
-        // style de l'interface graphique.
-        UIManager.setLookAndFeel( new NimbusLookAndFeel() );
         
-        // lancement de la fenêtre.
-        MyWindow myWindow = new MyWindow();
-        
+
+
     }
 
 /* 
 
- * #############################################################
- * #               FENETRE DU DIRECTORY CHOOSER                #
- * #############################################################
+ * #########################################################################################
+ * #                                  SETTERS ET GETTERS                                   #
+ * #########################################################################################
  
 */
-    public void openDirectoryChooser(){
-
-        JFileChooser choose = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-
-        choose.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        int res = choose.showOpenDialog(this);
-
-        if(res == JFileChooser.APPROVE_OPTION){
-            File directory = choose.getSelectedFile();
-            this.selectedPathDirectory = directory.toString();
-            this.promptInfos.append(" >>> A Directory is actually selected"+"\n");
-        }
-        else{
-
-            this.selectedPathDirectory = null;
-        }
-    }
-/* 
-
- * #############################################################
- * #                  FENETRE DU FILECHOOSER                   #
- * #############################################################
- 
-*/
-    public void openFileChosser(){
-
-        // on créer l'objet FileChooser
-        JFileChooser choose = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-
-        // Ouvrez le fichier vaut APPROVE_OPTION si fichier bien séléctionner
-        int res = choose.showOpenDialog(null);
-
-        // Enregistrez le fichier en créant un objet de type file
-        if (res == JFileChooser.APPROVE_OPTION) {
-            File file = choose.getSelectedFile();
-            this.selectedPathFile = file.getAbsolutePath();
-            this.promptInfos.append(" >>> A File is actually selected"+"\n");
-            
-
-
-        } 
-        else{
-            this.selectedPathFile = null;  //erreur aucun fichier sélectionner ou autre erreur
-        }
-         
-    }
-
-/* 
-
- * #############################################################
- * #         VERIFICATION DE L'EXTENSION DU FICHIER            #
- * #############################################################
- 
-*/
-
-    /**
-     * 
-     * @return (String) : l'extension du fichier sélectionné.
-     * @todo vérifier si la chaîne est vide sinon renvoyer une erreur
-     */
-    public boolean isImgPng(){
-
-        String [] path_to_tab = this.selectedPathFile.split("/");
-
-        String name_file = path_to_tab[path_to_tab.length-1];
-
-        String [] name_and_extension = name_file.split("\\.");
-
-        String extension = name_and_extension[name_and_extension.length-1];
-
-        if ((extension.equals("png")) || (extension.equals("PNG")) ){
-
-            this.name_file = name_file;
-
-            return true;
-        }
-        else{
-            this.name_file = name_file;
-            return false;
-        }
-
-    }
 
     public String getName_File(){
 
         return this.name_file;
     }
 
-    public void closeMyWindow(){
-
-        this.dispose();
-
+    public void setNameFile(String name_file){
+        this.name_file = name_file;
     }
+
+    public void setPathDirectory(String path){
+
+        this.selectedPathDirectory = path;
+    }
+
+    public void setPathFile(String path){
+
+        this.selectedPathFile = path;
+    }
+
+
 
 /* 
 
- * #############################################################
- * #                  ECOUTEURS D'EVENEMENTS                   #
- * #############################################################
+ * ###############################################################################################################
+ * #                                 ECOUTEURS D'EVENEMENTS                                                      #
+ * ###############################################################################################################
  
 */
 
 
-    private class OpenFileChooser implements ActionListener{
+/* 
 
-        @Override
-        public void actionPerformed(ActionEvent event){
+ * #########################################################################################
+ * #                 OUVERTURE BOITE DE DIALOGUE EXPORATEUR DE FICHIER                     #
+ * #########################################################################################
+ 
+*/
 
-            MyWindow.this.openFileChosser();
-        }
-    }
-
-
-    private class OpenDirectoryChooser implements ActionListener{
-
-        @Override
-        public void actionPerformed(ActionEvent event){
-
-            MyWindow.this.openDirectoryChooser();
-        }
-    }
-
+    private class OpenFileChooser extends MainWindow implements ActionListener {
         
-    private class OpenProcessColor implements ActionListener{
-    
-    
+        public OpenFileChooser(){
+            super(false);
+        }
+
         @Override
         public void actionPerformed(ActionEvent event){
-    
-            MyWindowForColor windows_color = new MyWindowForColor();
-            windows_color.setVisible(true);
-            MyWindow.this.closeMyWindow();
 
+            String name = super.openFileChosser();
+            setPathFile(name);
+            if(name != null)
+                MyWindow.this.promptInfos.append(" >>> A file is actually selected \n");
         }
-    }
+
+    } //FIN DE LA CLASSE INTERNE
+
+/* 
+
+ * #########################################################################################
+ * #            OUVERTURE BOITE DE DIALOGUE OUVERTURE EXPLORATEUR DE DOSSIER               #
+ * #########################################################################################
+ 
+*/
+
+    private class OpenDirectoryChooser extends MainWindow implements ActionListener{
+
+        public OpenDirectoryChooser(){
+            super(false);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event){
+
+            String name = super.openDirectoryChooser();
+            setPathDirectory(name);
+            if(name != null)
+                MyWindow.this.promptInfos.append(" >>> A directory is actually selected \n");
+        }
+
+    }//FIN DE LA CLASSE INTERNE
+
+/* 
+
+ * #########################################################################################
+ * #                         LANCEMENT DES TRAITEMENTS SELECTIONNES                        #
+ * #########################################################################################
+ 
+*/
 
 
 
-    private class ConfirmLaunch implements ActionListener{
+    private class ConfirmLaunch  extends MainWindow implements ActionListener{
+
+        public ConfirmLaunch(){
+            super(false);
+        }
 
         @Override
         public void actionPerformed(ActionEvent event){
@@ -312,7 +246,10 @@ public class MyWindow extends JFrame{
                 }
                 else{
 
-                    if(isImgPng() == true){ //on peut exécuter les méthodes de traitements
+                    String name_file = super.getNameFileToString(MyWindow.this.selectedPathFile); //on récupère le nom du fichier avec extension
+                    MyWindow.this.setNameFile(name_file); // on met à jour l'attribut
+
+                    if(super.isImgPng(MyWindow.this.selectedPathFile) == true){ //on peut exécuter les méthodes de traitements
 
                         //création de l'objet image
                         TraitementImageNoirBlanc obj = new TraitementImageNoirBlanc(MyWindow.this.selectedPathFile);
@@ -376,7 +313,7 @@ public class MyWindow extends JFrame{
                                 obj.fromColorToGray();
                                 obj.saveImage(MyWindow.this.selectedPathDirectory+"/noir&blanc_"+MyWindow.this.name_file);
 
-                                MyWindow.this.promptInfos.append(" >>> Process Contraste was successful"+"\n");
+                                MyWindow.this.promptInfos.append(" >>> Process ColorTogray was successful"+"\n");
                                 done = true;
                             }
                         }
@@ -394,10 +331,10 @@ public class MyWindow extends JFrame{
                 }   
             }
         }
-    }
+    } //FIN DE LA CLASSE INTERNE
 
 
-} //FIN DE CLASSE PRINCIPALE
+} //FIN DE CLASSE EXTERNE
 
 
 

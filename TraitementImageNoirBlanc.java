@@ -433,7 +433,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 */
 
     /**
-     * Methode qui vas se charger de recupérer une latrice de convolution dans un fichier .csv
+     * Methode qui vas se charger de recupérer une matrice de convolution dans un fichier .csv
      * @param file (String) nom du fichier csv
      */
 
@@ -446,15 +446,15 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         try{  
             BufferedReader br = new BufferedReader(new FileReader(file)); 
             line = br.readLine(); //lecture un premier coup en dehors de la boucle
-            String[] ligneConv = line.split(splitBy); 
-            this.dimConv=ligneConv.length; //qui nous permet d'obtenir la dimensions de la matrice de convolution
+            String[] ligneConv = line.split(splitBy); // on récupère chaque valeur de la premiere ligne de la matrice 
+            this.dimConv=ligneConv.length; //On récupère la dimension de la matrice de convolution
             this.conv=new int[this.dimConv][this.dimConv]; // que l'on peut donc initialiser
 
             for(int c=0;c<this.dimConv; c++){ //maintenant qu'on connais la taille, on recupere la premiere ligne
                 this.conv[l][c]=Integer.parseInt(ligneConv[c]);
             }
             l++; //on passe à la ligne suivante
-            while ((line = br.readLine()) != null) {  //puis on re applique n fois le procédé pour recuperer les autres lignes
+            while ((line = br.readLine()) != null) {  //puis on applique n fois le procédé pour recuperer les autres lignes
                 ligneConv = line.split(splitBy);
                 for(int c=0;c<this.dimConv; c++){
                     this.conv[l][c]=Integer.parseInt(ligneConv[c]);
@@ -468,16 +468,16 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     } 
 
 
-    public void toAffiche(){
+    // public void toAffiche(){
 
     
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.print(this.conv[i][j] + " ");
-            }
-            System.out.println("");
-        }
-    }
+    //     for (int i = 0; i < 3; i++) {
+    //         for (int j = 0; j < 3; j++) {
+    //             System.out.print(this.conv[i][j] + " ");
+    //         }
+    //         System.out.println("");
+    //     }
+    // }
 
     /**
      * permet à l'utilisateur de choisir le traitement qu'il veut faire
@@ -505,7 +505,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     }
 
     /**
-     * transforme e tavleau de byte en matrice de int
+     * transforme le tableau de byte en matrice de int
      */
     public void setPixelsInMatrice(){
 
@@ -518,6 +518,14 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
+    /**
+     * Methode qui vas se charger de calculer le nombre de colonne et ligne nécessaire pour calculer le voisinage d'un point 
+     * auquel on applique une matrice de convolution
+     * par exemple pour une MDC 3x3, on aura un voisisnage de 1, pour une MDC de 5x5 on aura un voisinage de 2 
+     * ect
+     * @param seuil (int) taille de la matrice de conv donc nécessairement impaire
+     * @return (int) taille du voisinage
+     */
     public int calculPas(int seuil){
 
         int pas=1;
@@ -530,101 +538,112 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         return pas;
     }
 
+    /**
+     * Méthode qui retourne le pixel convoler
+     * @return
+     */
     public int convOnePixel(){
 
-        int pixelConvoler=0;
+        int pixelConvoler=0; //on initialise le pixel convoler à 0
         for(int l=0;l<this.dimConv;l++){
             for (int c=0;c<this.dimConv;c++){
 
-                pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c];
+                pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c]; // on applique la formule de convolution
 
             }
         }
-        pixelConvoler = pixelConvoler / this.sum;
+        pixelConvoler = pixelConvoler / this.sum; // normalisation du pixel convoler
 
         if(pixelConvoler>255 || pixelConvoler<0){
                     
-            pixelConvoler = (pixelConvoler >> 0) & 0xFF;
+            pixelConvoler = (pixelConvoler >> 0) & 0xFF; // on remet la valeur sur [0,255] si on n'est plus dazns cet intervalles
         }
         return pixelConvoler;
     }
 
     
 
-    public void recupVoisins2(int nIemePixel){
+    // public void recupVoisins2(int nIemePixel){
 
-        int blocInMatrix=1;
-        int positionInBloc=0;
-        int realPosition=0;
-        int sortie=0;
-        for(int l=0;l<nIemePixel;l++){
-            realPosition++;
-            if(positionInBloc>2){
-                positionInBloc=0;
-                blocInMatrix++;
-            }
-            positionInBloc++;
-        }
+    //     int blocInMatrix=1;
+    //     int positionInBloc=0;
+    //     int realPosition=0;
+    //     int sortie=0;
+    //     for(int l=0;l<nIemePixel;l++){
+    //         realPosition++;
+    //         if(positionInBloc>2){
+    //             positionInBloc=0;
+    //             blocInMatrix++;
+    //         }
+    //         positionInBloc++;
+    //     }
 
-        for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
-            for(int c=0;c<this.dimConv; c++){
-                try {
-                    if(l==0){ // ligne du haut
-                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-4+c] & 0xFF);
-                        sortie=(positionInBloc-3)%3;
-                        if(sortie-1 < 0 || sortie+1>2){
-                            this.voisins_matrix[l][c]=0;
-                        }
-                    }
-                    if(l==1){ // ligne du milieu
-                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-1+c] & 0xFF);
-                        sortie=positionInBloc;
-                        if(sortie-1 < 0 || sortie+1>2){
-                            this.voisins_matrix[l][c]=0;
-                        }
-                    }
-                    if(l==2){ // ligne du bas
-                        this.voisins_matrix[l][c]=(int) (this.pixels[realPosition+2+c] & 0xFF);
-                        sortie=(positionInBloc+3)%3;
-                        if(sortie-1 < 0 || sortie+1>2){
-                            this.voisins_matrix[l][c]=0;
-                        }
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    this.voisins_matrix[l][c]=0;
-                }
-            }
-        }
-    }
+    //     for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
+    //         for(int c=0;c<this.dimConv; c++){
+    //             try {
+    //                 if(l==0){ // ligne du haut
+    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-4+c] & 0xFF);
+    //                     sortie=(positionInBloc-3)%3;
+    //                     if(sortie-1 < 0 || sortie+1>2){
+    //                         this.voisins_matrix[l][c]=0;
+    //                     }
+    //                 }
+    //                 if(l==1){ // ligne du milieu
+    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-1+c] & 0xFF);
+    //                     sortie=positionInBloc;
+    //                     if(sortie-1 < 0 || sortie+1>2){
+    //                         this.voisins_matrix[l][c]=0;
+    //                     }
+    //                 }
+    //                 if(l==2){ // ligne du bas
+    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition+2+c] & 0xFF);
+    //                     sortie=(positionInBloc+3)%3;
+    //                     if(sortie-1 < 0 || sortie+1>2){
+    //                         this.voisins_matrix[l][c]=0;
+    //                     }
+    //                 }
+    //             } catch (ArrayIndexOutOfBoundsException e) {
+    //                 this.voisins_matrix[l][c]=0;
+    //             }
+    //         }
+    //     }
+    // }
 
-    public void traitementConvolution2(String Traitement){
+    // public void traitementConvolution2(String Traitement){
 
-        choixConv(Traitement);
+    //     choixConv(Traitement);
        
-        int k=0;
-        for (int l=0;l<this.IMG_HEIGHT*this.IMG_WIDTH; l++){
+    //     int k=0;
+    //     for (int l=0;l<this.IMG_HEIGHT*this.IMG_WIDTH; l++){
 
-                recupVoisins2(l);
-                this.post_process_pixels[k]=(byte) convOnePixel();
-                k++;
-            }
-        }
+    //             recupVoisins2(l);
+    //             this.post_process_pixels[k]=(byte) convOnePixel();
+    //             k++;
+    //         }
+    //     }
 
+    /**
+     * Méthode qui récupère le voisinage d'un point en fonction de la taille de la matrice de convolution
+     * @param lp (int) indice de la ligne du pixel
+     * @param cp (int) indice de la colonne du pixel
+     */
     public void recupVoisins(int lp, int cp){
 
-        this.voisins_matrix=new int[this.dimConv][this.dimConv];
-        for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
+        this.voisins_matrix=new int[this.dimConv][this.dimConv]; //initialisation de la matrice qui contient le voisinage
+        for (int l=0;l<this.dimConv; l++){ //on parcours le voisinage de la matrice
             for(int c=0;c<this.dimConv; c++){
                 try {
-                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)];
+                    this.voisins_matrix[l][c]=this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]; //si on ne sort pas da la matrice, on stock la valeur recuperer.
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    this.voisins_matrix[l][c]=0;
+                    this.voisins_matrix[l][c]=0; //si on sort de la matrice, on met un 0 dans la matrice
                 }
             }
         }
     }
 
-
+    /**
+     * Méthode qui retourne la somme des coefficients de la matrice de convolution
+     */
     public void sumFiltre(){
 
 
@@ -641,16 +660,20 @@ public class TraitementImageNoirBlanc extends TraitementImage{
        
     }
 
+    /**
+     * Méthodes qui gère toute la convolution
+     * @param Traitement (String) Traitement que l'utilisateur souhaite appliquer
+     */
     public void traitementConvolution(String Traitement){
 
-        choixConv(Traitement);
-        sumFiltre();
-        setPixelsInMatrice();
+        choixConv(Traitement); // choix de la matrice de convolution
+        sumFiltre(); // calcul somme des coefficients de la matrice de convolution
+        setPixelsInMatrice(); // mise sous forme matricielle du tableau de byte
         int k=0;
-        for (int l=0;l<this.IMG_HEIGHT; l++){
+        for (int l=0;l<this.IMG_HEIGHT; l++){ //parcours de l'image
             for(int c=0;c<this.IMG_WIDTH;c++){
-                recupVoisins(l, c);
-                this.post_process_pixels[k]=(byte) convOnePixel();
+                recupVoisins(l, c); // recupere le voisinage du pixel
+                this.post_process_pixels[k]=(byte) convOnePixel(); // stock la convolution dans le tableau de sortie 
                 k++;
             }
         }

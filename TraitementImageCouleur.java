@@ -22,8 +22,7 @@ import java.awt.color.ColorSpace;
 import java.awt.image.DataBufferByte;
 import java.awt.image.SampleModel;
 import java.awt.image.DirectColorModel;
-import java.io.BufferedReader;
-import java.io.FileReader;
+
 
 /* 
 
@@ -39,7 +38,8 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 /* 
 
@@ -49,6 +49,7 @@ import java.io.FileNotFoundException;
  
 */
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -86,9 +87,15 @@ public class TraitementImageCouleur extends TraitementImage {
 
     private int [] post_process_pixels;
 
+
+
     private int conv[][];
 
     private int dimConv;
+
+    private int sum;
+
+
 
     private int [][] voisins_matrixR;
 
@@ -96,15 +103,15 @@ public class TraitementImageCouleur extends TraitementImage {
 
     private int [][] voisins_matrixB;
 
-    // private int [][] voisins_matrixA;
 
-    // private int pixelConvolerA;
 
     private int pixelConvolerR;
 
     private int pixelConvolerG;
 
     private int pixelConvolerB;
+
+
 
     private int IMG_HEIGHT;
 
@@ -218,7 +225,7 @@ public class TraitementImageCouleur extends TraitementImage {
     * @param name_img (String) qui est le nom de l'image
     * @return HashMap<Integer,int []> avec en clé les nuance [0,255] en valeur des tableau [R,G,B]
     */
-   public HashMap<Integer,int []> statsHashMapCol(String name_img){
+   public HashMap<Integer,int []> statsHashMapCol(){
 
 
         int r=0; //initialisation des 3 couleurs
@@ -265,7 +272,7 @@ public class TraitementImageCouleur extends TraitementImage {
 
     Path destination_path = Paths.get(destination);
 
-    HashMap<Integer,int []> sphm = statsHashMapCol(super.getNameFile());
+    HashMap<Integer,int []> sphm = statsHashMapCol();
 
     boolean iscreated = super.createFile(destination); // file doesn't exist , so it's created
 
@@ -470,25 +477,37 @@ public class TraitementImageCouleur extends TraitementImage {
         this.pixelConvolerB=0;
         for(int l=0;l<this.dimConv;l++){
             for (int c=0;c<this.dimConv;c++){
+
                 this.pixelConvolerR=this.pixelConvolerR+this.voisins_matrixR[l][c]*this.conv[l][c];
-                if(pixelConvolerR>255 || pixelConvolerR<0){
-                    this.pixelConvolerR = (this.pixelConvolerR >> 0) & 0xFF;
-                }
+
+
                 this.pixelConvolerG=this.pixelConvolerG+this.voisins_matrixG[l][c]*this.conv[l][c];
-                if(pixelConvolerG>255 || pixelConvolerG<0){
-                    this.pixelConvolerG = (this.pixelConvolerG >> 0) & 0xFF;
-                }
+
+
                 this.pixelConvolerB=this.pixelConvolerB+this.voisins_matrixB[l][c]*this.conv[l][c];
-                if(pixelConvolerB>255 || pixelConvolerB<0){
-                    this.pixelConvolerB = (this.pixelConvolerB >> 0) & 0xFF;
-                }
-                //this.pixelConvolerA=this.pixelConvolerA+this.voisins_matrixA[l][c]*this.conv[l][c];
-                // if(pixelConvolerA>255 || pixelConvolerA<0){
-                //     this.pixelConvolerA = (this.pixelConvolerA >> 0) & 0xFF;
-                // }
+
+
             }
         }
-        //System.out.println(this.pixelConvolerA+", "+this.pixelConvolerR+", "+this.pixelConvolerG+", "+this.pixelConvolerB);
+
+        this.pixelConvolerB = this.pixelConvolerB / this.sum ;
+        this.pixelConvolerG = this.pixelConvolerG / this.sum ;
+        this.pixelConvolerR = this.pixelConvolerR / this.sum ;
+
+        if(pixelConvolerR>255 || pixelConvolerR<0){
+            this.pixelConvolerR = ((this.pixelConvolerR >> 0) & 0xFF);
+        }
+
+        if(pixelConvolerG>255 || pixelConvolerG<0){
+            this.pixelConvolerG = ((this.pixelConvolerG >> 0) & 0xFF);
+        }
+
+        if(pixelConvolerB>255 || pixelConvolerB<0){
+            this.pixelConvolerB = ((this.pixelConvolerB>> 0) & 0xFF);
+        }
+
+
+
     }
 
     public int calculPas(int seuil){
@@ -503,12 +522,26 @@ public class TraitementImageCouleur extends TraitementImage {
         return pas;
     }
 
+
+    public void sumFiltre(){
+
+
+        for (int i = 0; i < this.dimConv; i++) {
+            for (int j = 0; j < this.dimConv; j++) {
+                this.sum = this.sum + this.conv[i][j];
+            }
+        }
+        if(this.sum == 0){
+            this.sum = 1;
+        }  
+       
+    }
+
     public void recupVoisins(int lp, int cp){
 
         this.voisins_matrixR=new int[this.dimConv][this.dimConv];
         this.voisins_matrixG=new int[this.dimConv][this.dimConv];
         this.voisins_matrixB=new int[this.dimConv][this.dimConv];
-        // this.voisins_matrixA=new int[this.dimConv][this.dimConv];
 
         for (int l=0;l<this.dimConv; l++){ 
             for(int c=0;c<this.dimConv; c++){
@@ -516,13 +549,10 @@ public class TraitementImageCouleur extends TraitementImage {
                     this.voisins_matrixR[l][c]=getR(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
                     this.voisins_matrixG[l][c]=getG(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
                     this.voisins_matrixB[l][c]=getB(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
-                    // this.voisins_matrixA[l][c]=getA(this.pixels_matrix[lp+l-1][cp+c-1]);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    //System.out.println("ici");
                     this.voisins_matrixR[l][c]=0;
                     this.voisins_matrixG[l][c]=0;
                     this.voisins_matrixB[l][c]=0;
-                    // this.voisins_matrixA[l][c]=0;
                 }
             }
         }
@@ -531,21 +561,20 @@ public class TraitementImageCouleur extends TraitementImage {
     public void traitementConvolution(String Traitement){
 
         choixConv(Traitement);
-        //setPixelsInMatrice();
+        this.sumFiltre(); //calcul de la somme pour normalisation
         int k=0;
         for (int l=0;l<this.IMG_HEIGHT; l++){
             for(int c=0;c<this.IMG_WIDTH;c++){
                 recupVoisins(l, c);
                 convOnePixel();
                 this.post_process_pixels[k]=getPixel(getA(this.pixels_matrix[l][c]), this.pixelConvolerR, this.pixelConvolerG, this.pixelConvolerB);
-                //System.out.println(this.post_process_pixels[k]);
                 k++;
             }
         }
     }
 
 
-    /* 
+/* 
 
  * ##########################################################################################
  * #   METHODE ENREGISTREMENT IMAGE --   #

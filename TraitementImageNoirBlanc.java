@@ -94,6 +94,8 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     private boolean iscolor;               // image couleur ou non
 
+    private int sum;
+
 /* 
 
  * #############################################################
@@ -157,6 +159,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
         return this.iscolor;
     }
+
 
 
 /* 
@@ -532,15 +535,21 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         int pixelConvoler=0;
         for(int l=0;l<this.dimConv;l++){
             for (int c=0;c<this.dimConv;c++){
+
                 pixelConvoler=pixelConvoler+this.voisins_matrix[l][c]*this.conv[l][c];
-                if(pixelConvoler>255 || pixelConvoler<0){
-                    //System.out.println("ici");
-                    pixelConvoler = (pixelConvoler >> 0) & 0xFF;
-                }
+
             }
+        }
+        pixelConvoler = pixelConvoler / this.sum;
+
+        if(pixelConvoler>255 || pixelConvoler<0){
+                    
+            pixelConvoler = (pixelConvoler >> 0) & 0xFF;
         }
         return pixelConvoler;
     }
+
+    
 
     public void recupVoisins2(int nIemePixel){
 
@@ -591,6 +600,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     public void traitementConvolution2(String Traitement){
 
         choixConv(Traitement);
+       
         int k=0;
         for (int l=0;l<this.IMG_HEIGHT*this.IMG_WIDTH; l++){
 
@@ -614,9 +624,27 @@ public class TraitementImageNoirBlanc extends TraitementImage{
         }
     }
 
+
+    public void sumFiltre(){
+
+
+        for (int i = 0; i < this.dimConv; i++) {
+            for (int j = 0; j < this.dimConv; j++) {
+                this.sum = this.sum + this.conv[i][j];
+            }
+        }
+        if(this.sum == 0){
+            this.sum = 1;
+        }  
+
+        System.out.println(this.sum);
+       
+    }
+
     public void traitementConvolution(String Traitement){
 
         choixConv(Traitement);
+        sumFiltre();
         setPixelsInMatrice();
         int k=0;
         for (int l=0;l<this.IMG_HEIGHT; l++){

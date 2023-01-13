@@ -89,27 +89,27 @@ public class TraitementImageCouleur extends TraitementImage {
 
 
 
-    private int conv[][];
+    private int conv[][]; //matrice de convolution
 
-    private int dimConv;
+    private int dimConv; //dimension matrice convolution
 
-    private int sum;
-
-
-
-    private int [][] voisins_matrixR;
-
-    private int [][] voisins_matrixG;
-
-    private int [][] voisins_matrixB;
+    private int sum; //somme des coefficient de la matrice de convolution
 
 
 
-    private int pixelConvolerR;
+    private int [][] voisins_matrixR; // tableau qui contient les voisins du pixel en composante rouge
 
-    private int pixelConvolerG;
+    private int [][] voisins_matrixG; // tableau qui contient les voisins du pixel en composante vert
 
-    private int pixelConvolerB;
+    private int [][] voisins_matrixB; // tableau qui contient les voisins du pixel en composante bleu
+
+
+
+    private int pixelConvolerR; // pixel après avoir ppliquer la convolution sur la composante rouge
+
+    private int pixelConvolerG; // pixel après avoir ppliquer la convolution sur la composante vert
+
+    private int pixelConvolerB; // pixel après avoir ppliquer la convolution sur la composante bleu
 
 
 
@@ -466,17 +466,17 @@ public class TraitementImageCouleur extends TraitementImage {
     }
 
     /**
-     * transforme e tavleau de byte en matrice de int
+     * applique la convolution sur un pixel
      */
     
 
     public void convOnePixel(){
 
-        this.pixelConvolerR=0;
+        this.pixelConvolerR=0; //initialisation pixelConvoler à 0
         this.pixelConvolerG=0;
         this.pixelConvolerB=0;
         for(int l=0;l<this.dimConv;l++){
-            for (int c=0;c<this.dimConv;c++){
+            for (int c=0;c<this.dimConv;c++){ //application de la formule de la convolution sur chaque canal coueur
 
                 this.pixelConvolerR=this.pixelConvolerR+this.voisins_matrixR[l][c]*this.conv[l][c];
 
@@ -490,11 +490,11 @@ public class TraitementImageCouleur extends TraitementImage {
             }
         }
 
-        this.pixelConvolerB = this.pixelConvolerB / this.sum ;
+        this.pixelConvolerB = this.pixelConvolerB / this.sum ; // réequilibrage des coueurs
         this.pixelConvolerG = this.pixelConvolerG / this.sum ;
         this.pixelConvolerR = this.pixelConvolerR / this.sum ;
 
-        if(pixelConvolerR>255 || pixelConvolerR<0){
+        if(pixelConvolerR>255 || pixelConvolerR<0){ // récupération du byte de poid faible si on sort de l'intervalle [0,255] sur chaque canal couleur
             this.pixelConvolerR = ((this.pixelConvolerR >> 0) & 0xFF);
         }
 
@@ -510,7 +510,13 @@ public class TraitementImageCouleur extends TraitementImage {
 
     }
 
-    public int calculPas(int seuil){
+    /**
+     * méthode qui calcule la taille du voisinnage d'un pixel
+     * @param seuil (int) est la taille de la matrice filtre
+     * Cette méthode permet ensuite dans RecupVoisins de l'appliquer peut importe la taille de la matrice de convolution
+     */
+
+    public int calculPas(int seuil){ 
 
         int pas=1;
         int cpt=3;
@@ -522,6 +528,10 @@ public class TraitementImageCouleur extends TraitementImage {
         return pas;
     }
 
+
+    /**
+     * Calcul la somme des coefficients d'une matrice
+     */
 
     public void sumFiltre(){
 
@@ -537,19 +547,25 @@ public class TraitementImageCouleur extends TraitementImage {
        
     }
 
+    /**
+     * 
+     * @param lp (int) indice ligne du pixel
+     * @param cp (int) indice colonne du pixel
+     */
+
     public void recupVoisins(int lp, int cp){
 
-        this.voisins_matrixR=new int[this.dimConv][this.dimConv];
+        this.voisins_matrixR=new int[this.dimConv][this.dimConv]; //on récupère chaque composante de couleur d'un pixel
         this.voisins_matrixG=new int[this.dimConv][this.dimConv];
         this.voisins_matrixB=new int[this.dimConv][this.dimConv];
 
-        for (int l=0;l<this.dimConv; l++){ 
+        for (int l=0;l<this.dimConv; l++){ //parcours du voisinnage du pixel peut importe la taille de la matrice de convolution
             for(int c=0;c<this.dimConv; c++){
-                try {
+                try { //si on ne sort pas du tableau de pixels, on met le pixel dans la matrice de voisinnage
                     this.voisins_matrixR[l][c]=getR(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
                     this.voisins_matrixG[l][c]=getG(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
                     this.voisins_matrixB[l][c]=getB(this.pixels_matrix[lp+l-calculPas(this.dimConv)][cp+c-calculPas(this.dimConv)]);
-                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ArrayIndexOutOfBoundsException e) { // si on sort, on met un 0 dans le voisinnage
                     this.voisins_matrixR[l][c]=0;
                     this.voisins_matrixG[l][c]=0;
                     this.voisins_matrixB[l][c]=0;
@@ -558,6 +574,10 @@ public class TraitementImageCouleur extends TraitementImage {
         }
     }
 
+    /**
+     * Méthode qui se charge d'appliquer le traitement de convolution
+     * @param Traitement (String) Choix de la matrice de convolution
+     */
     public void traitementConvolution(String Traitement){
 
         choixConv(Traitement);
@@ -565,9 +585,9 @@ public class TraitementImageCouleur extends TraitementImage {
         int k=0;
         for (int l=0;l<this.IMG_HEIGHT; l++){
             for(int c=0;c<this.IMG_WIDTH;c++){
-                recupVoisins(l, c);
-                convOnePixel();
-                this.post_process_pixels[k]=getPixel(getA(this.pixels_matrix[l][c]), this.pixelConvolerR, this.pixelConvolerG, this.pixelConvolerB);
+                recupVoisins(l, c); //récupère les voisins du pixels
+                convOnePixel(); //applique la convolution
+                this.post_process_pixels[k]=getPixel(getA(this.pixels_matrix[l][c]), this.pixelConvolerR, this.pixelConvolerG, this.pixelConvolerB); //stcok le pixel convoler dans le tableau de sortie
                 k++;
             }
         }

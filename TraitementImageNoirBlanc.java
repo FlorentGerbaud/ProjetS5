@@ -468,16 +468,6 @@ public class TraitementImageNoirBlanc extends TraitementImage{
     } 
 
 
-    // public void toAffiche(){
-
-    
-    //     for (int i = 0; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             System.out.print(this.conv[i][j] + " ");
-    //         }
-    //         System.out.println("");
-    //     }
-    // }
 
     /**
      * permet à l'utilisateur de choisir le traitement qu'il veut faire
@@ -563,64 +553,7 @@ public class TraitementImageNoirBlanc extends TraitementImage{
 
     
 
-    // public void recupVoisins2(int nIemePixel){
 
-    //     int blocInMatrix=1;
-    //     int positionInBloc=0;
-    //     int realPosition=0;
-    //     int sortie=0;
-    //     for(int l=0;l<nIemePixel;l++){
-    //         realPosition++;
-    //         if(positionInBloc>2){
-    //             positionInBloc=0;
-    //             blocInMatrix++;
-    //         }
-    //         positionInBloc++;
-    //     }
-
-    //     for (int l=0;l<this.dimConv; l++){ //il faudra creer un attribut tailles matrices
-    //         for(int c=0;c<this.dimConv; c++){
-    //             try {
-    //                 if(l==0){ // ligne du haut
-    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-4+c] & 0xFF);
-    //                     sortie=(positionInBloc-3)%3;
-    //                     if(sortie-1 < 0 || sortie+1>2){
-    //                         this.voisins_matrix[l][c]=0;
-    //                     }
-    //                 }
-    //                 if(l==1){ // ligne du milieu
-    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition-1+c] & 0xFF);
-    //                     sortie=positionInBloc;
-    //                     if(sortie-1 < 0 || sortie+1>2){
-    //                         this.voisins_matrix[l][c]=0;
-    //                     }
-    //                 }
-    //                 if(l==2){ // ligne du bas
-    //                     this.voisins_matrix[l][c]=(int) (this.pixels[realPosition+2+c] & 0xFF);
-    //                     sortie=(positionInBloc+3)%3;
-    //                     if(sortie-1 < 0 || sortie+1>2){
-    //                         this.voisins_matrix[l][c]=0;
-    //                     }
-    //                 }
-    //             } catch (ArrayIndexOutOfBoundsException e) {
-    //                 this.voisins_matrix[l][c]=0;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // public void traitementConvolution2(String Traitement){
-
-    //     choixConv(Traitement);
-       
-    //     int k=0;
-    //     for (int l=0;l<this.IMG_HEIGHT*this.IMG_WIDTH; l++){
-
-    //             recupVoisins2(l);
-    //             this.post_process_pixels[k]=(byte) convOnePixel();
-    //             k++;
-    //         }
-    //     }
 
     /**
      * Méthode qui récupère le voisinage d'un point en fonction de la taille de la matrice de convolution
